@@ -3,40 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WalkCal: Calorie Calculator</title>
+    <title>WalkCal: Calorie & Activity Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase Client JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            /* Subtle pattern for a modern fitness feel */
             background-color: #f8fafc;
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 24px 24px;
         }
-        /* Custom scrollbar for a polished look */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 sm:p-6 text-slate-800">
+<body class="min-h-screen py-10 px-4 sm:px-6 text-slate-800 flex flex-col items-center">
 
     <main class="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
         
-        <!-- Header Section -->
+        <!-- Header -->
         <header class="bg-emerald-600 p-6 sm:p-8 text-white text-center">
             <h1 class="text-3xl font-bold tracking-tight mb-2 flex items-center justify-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4v16"/><path d="M17 4v16"/><path d="M19 8H5"/><path d="M19 16H5"/></svg>
                 WalkCal
             </h1>
-            <p class="text-emerald-100 font-medium">Calculate your walking energy expenditure</p>
+            <p class="text-emerald-100 font-medium">Calculate & track your walking energy expenditure</p>
         </header>
 
         <div class="p-6 sm:p-8">
             <form id="calculatorForm" class="space-y-6">
-                
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <!-- Steps -->
                     <div>
@@ -84,161 +83,240 @@
                     </div>
                 </div>
 
-                <!-- Error Message Container -->
                 <div id="errorMessage" class="hidden text-red-500 text-sm font-medium text-center"></div>
 
-                <button type="submit" 
+                <button type="submit" id="submitBtn"
                     class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-200 transition-all active:scale-[0.98] flex justify-center items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-                    Calculate Calories
+                    <span>Calculate & Save Walk</span>
                 </button>
             </form>
 
-            <!-- Results Section (Hidden by default) -->
-            <div id="resultsSection" class="hidden mt-8 pt-8 border-t border-slate-200 animate-fade-in">
-                <h2 class="text-xl font-bold text-slate-800 mb-4 text-center">Your Walk Summary</h2>
+            <!-- Results Section -->
+            <div id="resultsSection" class="hidden mt-8 pt-8 border-t border-slate-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-slate-800">Walk Summary</h2>
+                    <span id="syncBadge" class="text-xs px-2.5 py-1 rounded-full font-medium bg-slate-100 text-slate-600">Saved locally</span>
+                </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <!-- Gross Calories Card -->
                     <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-5 rounded-2xl border border-emerald-100 flex flex-col items-center text-center">
-                        <span class="text-emerald-800 text-sm font-semibold mb-1">Gross Calories Burned</span>
+                        <span class="text-emerald-800 text-sm font-semibold mb-1">Gross Calories</span>
                         <span class="text-3xl font-extrabold text-emerald-600" id="resGrossCalories">--</span>
-                        <span class="text-xs text-emerald-600/70 mt-1">Total energy spent during walk</span>
+                        <span class="text-xs text-emerald-600/70 mt-1">Total energy spent</span>
                     </div>
 
-                    <!-- Net Calories Card -->
                     <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-5 rounded-2xl border border-blue-100 flex flex-col items-center text-center">
                         <span class="text-blue-800 text-sm font-semibold mb-1">Net Active Calories</span>
                         <span class="text-3xl font-extrabold text-blue-600" id="resNetCalories">--</span>
-                        <span class="text-xs text-blue-600/70 mt-1">Calories above resting rate</span>
+                        <span class="text-xs text-blue-600/70 mt-1">Above resting baseline</span>
                     </div>
                 </div>
 
-                <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 grid grid-cols-2 gap-y-4 gap-x-2 text-sm">
+                <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                     <div>
-                        <p class="text-slate-500 font-medium">Pace</p>
-                        <p class="text-slate-800 font-bold text-lg" id="resPace">-- min/km</p>
+                        <p class="text-slate-500 text-xs font-medium">Pace</p>
+                        <p class="text-slate-800 font-bold text-base" id="resPace">--</p>
                     </div>
                     <div>
-                        <p class="text-slate-500 font-medium">Speed</p>
-                        <p class="text-slate-800 font-bold text-lg"><span id="resSpeedKmh">--</span> km/h</p>
-                        <p class="text-slate-400 text-xs">(<span id="resSpeedMph">--</span> mph)</p>
+                        <p class="text-slate-500 text-xs font-medium">Speed</p>
+                        <p class="text-slate-800 font-bold text-base"><span id="resSpeedKmh">--</span> km/h</p>
                     </div>
                     <div>
-                        <p class="text-slate-500 font-medium">Cadence</p>
-                        <p class="text-slate-800 font-bold text-lg"><span id="resCadence">--</span> spm</p>
+                        <p class="text-slate-500 text-xs font-medium">Cadence</p>
+                        <p class="text-slate-800 font-bold text-base"><span id="resCadence">--</span> spm</p>
                     </div>
                     <div>
-                        <p class="text-slate-500 font-medium">Estimated MET</p>
-                        <p class="text-slate-800 font-bold text-lg" id="resMet">--</p>
+                        <p class="text-slate-500 text-xs font-medium">Est. MET</p>
+                        <p class="text-slate-800 font-bold text-base" id="resMet">--</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Recent Walks Log Section -->
+            <section class="mt-10 pt-8 border-t border-slate-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        Recent Walk History
+                    </h3>
+                    <span id="historySourceTag" class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Local</span>
+                </div>
+                
+                <div id="historyContainer" class="space-y-2">
+                    <p class="text-slate-400 text-sm text-center py-4">No walks logged yet. Calculate your first walk above!</p>
+                </div>
+            </section>
         </div>
     </main>
 
     <script>
-        // MET interpolation function based on walking speed in mph
-        // Based on standard ACSM metabolic equivalents
+        // ==========================================
+        // 1. SUPABASE CONFIGURATION
+        // Replace these two constants with your values:
+        // ==========================================
+        const SUPABASE_URL = "https://yvqsllaijzipaihblcbw.supabase.co/rest/v1/"; // e.g. "https://xxxxxx.supabase.co"
+        const SUPABASE_KEY = "sb_publishable_I6WtuC9L9Y4hRk5m2jxgAw_20bjRehu"; // starts with "sb_publishable_..."
+
+        let supabaseClient = null;
+        if (SUPABASE_URL !== "https://yvqsllaijzipaihblcbw.supabase.co/rest/v1/" && SUPABASE_KEY !== "sb_publishable_I6WtuC9L9Y4hRk5m2jxgAw_20bjRehu") {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            document.getElementById('historySourceTag').textContent = "Supabase Cloud";
+        }
+
+        // MET interpolation table
         function calculateMET(mph) {
             if (mph <= 0) return 1.0;
             if (mph < 2.0) return 2.0;
-            // Linear interpolation between known standard benchmarks
             if (mph < 2.5) return 2.8 + (mph - 2.0) * ((3.0 - 2.8) / 0.5);
             if (mph < 3.0) return 3.0 + (mph - 2.5) * ((3.5 - 3.0) / 0.5);
             if (mph < 3.5) return 3.5 + (mph - 3.0) * ((4.3 - 3.5) / 0.5);
             if (mph < 4.0) return 4.3 + (mph - 3.5) * ((5.0 - 4.3) / 0.5);
             if (mph < 4.5) return 5.0 + (mph - 4.0) * ((7.0 - 5.0) / 0.5);
             if (mph < 5.0) return 7.0 + (mph - 4.5) * ((8.3 - 7.0) / 0.5);
-            
-            // Extrapolate for speeds > 5.0 mph
-            return 8.3 + (mph - 5.0) * 1.5; 
+            return 8.3 + (mph - 5.0) * 1.5;
         }
 
-        // Handle form submission
-        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+        // Load walk history on startup
+        document.addEventListener('DOMContentLoaded', fetchWalks);
+
+        // Form Submit Handler
+        document.getElementById('calculatorForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Clear errors
             const errorMsg = document.getElementById('errorMessage');
             errorMsg.classList.add('hidden');
-            errorMsg.textContent = '';
 
             try {
-                // Get inputs
-                const steps = parseFloat(document.getElementById('steps').value);
+                const steps = parseInt(document.getElementById('steps').value);
                 const distanceKm = parseFloat(document.getElementById('distance').value);
-                const durationMin = parseFloat(document.getElementById('duration').value);
+                const durationMin = parseInt(document.getElementById('duration').value);
                 const weightKg = parseFloat(document.getElementById('weight').value);
-                // Age and Gender are collected but the standard MET formula requested relies on Weight and Duration.
-                // const age = parseFloat(document.getElementById('age').value);
-                // const gender = document.getElementById('gender').value;
 
                 if (durationMin <= 0 || distanceKm <= 0 || weightKg <= 0) {
                     throw new Error("Values must be greater than zero.");
                 }
 
                 const durationHours = durationMin / 60;
-
-                // Calculate Speeds & Pace
                 const speedKmh = distanceKm / durationHours;
                 const speedMph = speedKmh * 0.621371;
                 const paceMinPerKm = durationMin / distanceKm;
-                
-                // Calculate Cadence (steps per minute)
-                const cadence = steps / durationMin;
-
-                // Calculate MET
+                const cadence = Math.round(steps / durationMin);
                 const met = calculateMET(speedMph);
 
-                // Calculate Calories
-                const grossCalories = met * weightKg * durationHours;
-                const netCalories = (met - 1) * weightKg * durationHours;
+                const grossCalories = Math.round(met * weightKg * durationHours);
+                const netCalories = Math.round((met - 1) * weightKg * durationHours);
 
-                // Update Results UI
-                document.getElementById('resGrossCalories').textContent = Math.round(grossCalories);
-                document.getElementById('resNetCalories').textContent = Math.round(netCalories);
-                
-                // Format minutes and seconds for pace
                 const paceMinutes = Math.floor(paceMinPerKm);
                 const paceSeconds = Math.round((paceMinPerKm - paceMinutes) * 60);
-                document.getElementById('resPace').textContent = `${paceMinutes}:${paceSeconds.toString().padStart(2, '0')} min/km`;
-                
+                const paceStr = `${paceMinutes}:${paceSeconds.toString().padStart(2, '0')} /km`;
+
+                // Update UI Summary
+                document.getElementById('resGrossCalories').textContent = grossCalories;
+                document.getElementById('resNetCalories').textContent = netCalories;
+                document.getElementById('resPace').textContent = paceStr;
                 document.getElementById('resSpeedKmh').textContent = speedKmh.toFixed(1);
-                document.getElementById('resSpeedMph').textContent = speedMph.toFixed(1);
-                document.getElementById('resCadence').textContent = Math.round(cadence);
+                document.getElementById('resCadence').textContent = cadence;
                 document.getElementById('resMet').textContent = met.toFixed(1);
 
-                // Show Results Section
-                const resultsSection = document.getElementById('resultsSection');
-                resultsSection.classList.remove('hidden');
-                
-                // Smooth scroll to results on mobile
-                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                document.getElementById('resultsSection').classList.remove('hidden');
+
+                // Record object
+                const walkRecord = {
+                    steps,
+                    distance_km: distanceKm,
+                    duration_min: durationMin,
+                    weight_kg: weightKg,
+                    gross_calories: grossCalories,
+                    net_calories: netCalories,
+                    pace: paceStr,
+                    speed_kmh: parseFloat(speedKmh.toFixed(1)),
+                    created_at: new Date().toISOString()
+                };
+
+                // Save to DB or LocalStorage
+                await saveWalk(walkRecord);
+                await fetchWalks();
 
             } catch (error) {
                 errorMsg.textContent = error.message;
                 errorMsg.classList.remove('hidden');
             }
         });
-    </script>
 
-    <!-- Tailwind custom animation config -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    }
+        // Save Walk (Cloud with local fallback)
+        async function saveWalk(record) {
+            const badge = document.getElementById('syncBadge');
+            
+            if (supabaseClient) {
+                badge.textContent = "Syncing...";
+                badge.className = "text-xs px-2.5 py-1 rounded-full font-medium bg-amber-100 text-amber-800";
+                
+                const { error } = await supabaseClient.from('walks').insert([record]);
+                if (!error) {
+                    badge.textContent = "Synced to Supabase";
+                    badge.className = "text-xs px-2.5 py-1 rounded-full font-medium bg-emerald-100 text-emerald-800";
+                    return;
+                }
+                console.error("Supabase error, saving locally:", error.message);
+            }
+
+            // LocalStorage fallback
+            const localWalks = JSON.parse(localStorage.getItem('walk_history') || '[]');
+            localWalks.unshift(record);
+            localStorage.setItem('walk_history', JSON.stringify(localWalks.slice(0, 15)));
+            
+            badge.textContent = "Saved locally";
+            badge.className = "text-xs px-2.5 py-1 rounded-full font-medium bg-slate-100 text-slate-600";
+        }
+
+        // Fetch & Render History
+        async function fetchWalks() {
+            let walks = [];
+
+            if (supabaseClient) {
+                const { data, error } = await supabaseClient
+                    .from('walks')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (!error && data) {
+                    walks = data;
                 }
             }
+
+            if (walks.length === 0) {
+                walks = JSON.parse(localStorage.getItem('walk_history') || '[]');
+            }
+
+            renderHistoryList(walks);
+        }
+
+        function renderHistoryList(walks) {
+            const container = document.getElementById('historyContainer');
+            if (!walks || walks.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-sm text-center py-4">No walks logged yet.</p>`;
+                return;
+            }
+
+            container.innerHTML = walks.map(w => {
+                const date = new Date(w.created_at).toLocaleDateString(undefined, {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+                return `
+                    <div class="flex items-center justify-between p-3.5 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 transition-all text-sm">
+                        <div>
+                            <p class="font-semibold text-slate-800">${w.distance_km} km <span class="text-slate-400 font-normal">in ${w.duration_min} min</span></p>
+                            <p class="text-xs text-slate-500">${date} • ${w.steps.toLocaleString()} steps • ${w.pace}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-emerald-600 text-base">${Math.round(w.gross_calories)}</span>
+                            <span class="text-xs text-slate-400 block">kcal</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
     </script>
 </body>
