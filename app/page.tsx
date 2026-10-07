@@ -230,7 +230,7 @@ export default function DualTrackerApp() {
             </div>
 
             <div className="space-y-4">
-              <!-- Steps -->
+              {/* Steps */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Steps</label>
                 <div className="relative">
