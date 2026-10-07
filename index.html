@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WalkCal — Dual Activity & Calorie Tracker</title>
-    <!-- Tailwind CSS CDN -->
+    <title>WalkCal — Precision Walk Tracker</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -40,28 +40,28 @@
                 <span class="text-lg font-black tracking-tight text-slate-900">Walk<span class="text-emerald-600">Cal</span></span>
             </div>
 
-            <!-- Dual Profile Switcher Pill -->
+            <!-- Profile Switcher & Settings -->
             <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl border border-slate-200">
                 <button type="button" id="btnProfileWife" onclick="switchProfile('wife')"
-                    class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white text-slate-900 shadow-sm">
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white text-slate-900 shadow-sm">
                     <span>👩</span>
                     <span>Wife</span>
                     <span id="navWifeWeight" class="text-[10px] text-emerald-600 font-semibold">71kg</span>
                 </button>
                 <button type="button" id="btnProfileMe" onclick="switchProfile('me')"
-                    class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-500 hover:text-slate-800">
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-500 hover:text-slate-800">
                     <span>👨</span>
                     <span>Me</span>
                     <span id="navMeWeight" class="text-[10px] text-slate-400 font-normal">78kg</span>
                 </button>
-                <button type="button" onclick="toggleSettingsDrawer()" class="p-1.5 text-slate-400 hover:text-slate-700 transition-colors rounded-lg" title="Adjust Profile Specs">
+                <button type="button" onclick="toggleSettingsDrawer()" class="p-1.5 text-slate-400 hover:text-slate-700 transition-colors rounded-lg" title="Profile Settings">
                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Profile Specs Quick Editor Drawer -->
+    <!-- Profile Specs Drawer -->
     <div id="settingsDrawer" class="hidden max-w-5xl mx-auto px-4 sm:px-6 pt-4">
         <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-sm">
             <div class="flex items-center gap-2">
@@ -74,10 +74,6 @@
                     <input type="number" id="drawerWeightInput" step="0.5" class="w-20 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-sm font-bold outline-none focus:border-emerald-500">
                     <span class="text-xs text-slate-400">kg</span>
                 </div>
-                <div class="flex items-center gap-1.5">
-                    <label class="text-xs font-semibold text-slate-500">Age:</label>
-                    <input type="number" id="drawerAgeInput" class="w-16 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-sm font-bold outline-none focus:border-emerald-500">
-                </div>
                 <button type="button" onclick="saveDrawerSettings()" class="text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer">
                     Save
                 </button>
@@ -86,7 +82,48 @@
     </div>
 
     <!-- Main Workspace -->
-    <main class="max-w-5xl mx-auto px-4 sm:px-6 pt-6">
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
+
+        <!-- TODAY'S HOUSEHOLD PROGRESS SCORECARD -->
+        <section class="grid grid-cols-2 gap-4">
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                        <span class="text-base">👩</span> Wife Today
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Daily Total</span>
+                </div>
+                <div class="flex items-baseline justify-between mt-1">
+                    <div>
+                        <span class="text-2xl sm:text-3xl font-black text-slate-900" id="todayWifeCal">0</span>
+                        <span class="text-xs font-bold text-emerald-600 ml-0.5">net kcal</span>
+                    </div>
+                    <div class="text-right text-xs font-semibold text-slate-400">
+                        <span id="todayWifeSteps" class="text-slate-700 font-bold">0</span> steps · <span id="todayWifeDist">0</span> km
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                        <span class="text-base">👨</span> Me Today
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-2 py-0.5 rounded-md">Daily Total</span>
+                </div>
+                <div class="flex items-baseline justify-between mt-1">
+                    <div>
+                        <span class="text-2xl sm:text-3xl font-black text-slate-900" id="todayMeCal">0</span>
+                        <span class="text-xs font-bold text-teal-600 ml-0.5">net kcal</span>
+                    </div>
+                    <div class="text-right text-xs font-semibold text-slate-400">
+                        <span id="todayMeSteps" class="text-slate-700 font-bold">0</span> steps · <span id="todayMeDist">0</span> km
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WORKOUT CALCULATOR & DASHBOARD -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             <!-- LEFT: Quick Input Panel -->
@@ -97,9 +134,9 @@
                             <span>Log Walk for</span>
                             <span id="formProfileTarget" class="text-emerald-600">Wife</span>
                         </h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Calculates instantly with <span id="formWeightTarget">71</span> kg baseline</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Calculates with <span id="formWeightTarget">71</span> kg body weight</p>
                     </div>
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">Live</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">Live Sync</span>
                 </div>
 
                 <div class="space-y-4">
@@ -156,6 +193,20 @@
                         <button type="button" onclick="setDuration(60)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">60m</button>
                     </div>
 
+                    <!-- Incline & Slope Grade Selector -->
+                    <div class="pt-1">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-500">Incline / Slope</label>
+                            <span id="inclineLabel" class="text-xs font-bold text-emerald-600">Flat (0%)</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2 bg-slate-100 p-1 rounded-2xl">
+                            <button type="button" onclick="setIncline(0)" id="incBtn0" class="py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-sm">0% Flat</button>
+                            <button type="button" onclick="setIncline(3)" id="incBtn3" class="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800">3% Mild</button>
+                            <button type="button" onclick="setIncline(6)" id="incBtn6" class="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800">6% Hill</button>
+                            <button type="button" onclick="setIncline(10)" id="incBtn10" class="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800">10% Steep</button>
+                        </div>
+                    </div>
+
                     <!-- Cloud Save Button -->
                     <button type="button" id="saveLogBtn" onclick="saveCurrentWalk()"
                         class="w-full mt-2 bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-bold py-4 px-4 rounded-2xl shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2 transition-all cursor-pointer">
@@ -165,19 +216,19 @@
                 </div>
             </section>
 
-            <!-- RIGHT: Live Burn & History -->
+            <!-- RIGHT: Live Burn & Session Analytics -->
             <section class="lg:col-span-6 space-y-6">
                 
                 <!-- HERO CARD -->
                 <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm shadow-slate-200/40 relative overflow-hidden">
                     <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                         <span id="pacePill" class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">
-                            Brisk Walk
+                            Brisk Walk (Zone 2)
                         </span>
                         <div class="text-[11px] font-semibold text-slate-400">Target: <span id="heroProfileBadge" class="text-slate-700 font-bold">Wife</span></div>
                     </div>
 
-                    <!-- HERO NUMBER: Net Active Calories -->
+                    <!-- HERO: Net Active Calories -->
                     <div class="mt-5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
                         <div>
                             <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 block mb-1">
@@ -200,8 +251,21 @@
                         </div>
                     </div>
 
+                    <!-- Cardio Effort Gauge -->
+                    <div class="mt-5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                        <div class="flex justify-between items-center mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            <span>Effort Zone</span>
+                            <span id="zoneDescription" class="text-emerald-700">Fat-Oxidation Sweet Spot</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden flex">
+                            <div id="barZ1" class="h-full bg-blue-400 transition-all" style="width: 33%"></div>
+                            <div id="barZ2" class="h-full bg-emerald-500 transition-all" style="width: 34%"></div>
+                            <div id="barZ3" class="h-full bg-amber-500 transition-all" style="width: 33%"></div>
+                        </div>
+                    </div>
+
                     <!-- Metrics Grid -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-6 pt-5 border-t border-slate-100 text-center">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-100 text-center">
                         <div class="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Pace</span>
                             <p class="text-sm font-bold text-slate-900" id="resPace">11:15 <span class="text-[10px] font-normal text-slate-400">/km</span></p>
@@ -215,20 +279,22 @@
                             <p class="text-sm font-bold text-slate-900"><span id="resCadence">133</span> <span class="text-[10px] font-normal text-slate-400">spm</span></p>
                         </div>
                         <div class="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">MET</span>
-                            <p class="text-sm font-bold text-slate-900" id="resMet">4.0</p>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Intensity</span>
+                            <p class="text-sm font-bold text-slate-900" id="resMet">4.0 MET</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- ACTIVITY LOG -->
+                <!-- ACTIVITY LOG WITH FILTER TABS & DELETE -->
                 <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm shadow-slate-200/40">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2">
-                            <h3 class="text-base font-bold text-slate-900">Household Walk Log</h3>
-                            <span id="historyCountBadge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">0 logged</span>
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-base font-bold text-slate-900">Walk History</h3>
+                        <!-- Filter Tabs -->
+                        <div class="flex gap-1 bg-slate-100 p-0.5 rounded-xl text-xs font-semibold text-slate-500">
+                            <button type="button" onclick="setHistoryFilter('all')" id="filterBtnAll" class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs">All</button>
+                            <button type="button" onclick="setHistoryFilter('Wife')" id="filterBtnWife" class="px-2.5 py-1 rounded-lg hover:text-slate-900">👩 Wife</button>
+                            <button type="button" onclick="setHistoryFilter('Me')" id="filterBtnMe" class="px-2.5 py-1 rounded-lg hover:text-slate-900">👨 Me</button>
                         </div>
-                        <button onclick="clearHistory()" class="text-xs font-semibold text-slate-400 hover:text-rose-500 transition-colors">Clear</button>
                     </div>
 
                     <div id="historyContainer" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
@@ -242,7 +308,7 @@
 
     <script>
         // ==========================================
-        // 1. SUPABASE INITIALIZATION
+        // 1. SUPABASE CLIENT
         // ==========================================
         const SUPABASE_URL = "https://yvqsllaijzipaihblcbw.supabase.co";
         const SUPABASE_KEY = "sb_publishable_I6WtuC9L9Y4hRk5m2jxgAw_20bjRehu";
@@ -260,12 +326,15 @@
         // 2. DUAL PROFILES STATE
         // ==========================================
         const DEFAULT_PROFILES = {
-            wife: { id: 'wife', name: 'Wife', avatar: '👩', weightKg: 71, age: 32 },
-            me: { id: 'me', name: 'Me', avatar: '👨', weightKg: 78, age: 34 }
+            wife: { id: 'wife', name: 'Wife', avatar: '👩', weightKg: 71 },
+            me: { id: 'me', name: 'Me', avatar: '👨', weightKg: 78 }
         };
 
         let profiles = JSON.parse(localStorage.getItem('household_profiles')) || DEFAULT_PROFILES;
         let activeProfileId = localStorage.getItem('active_profile_id') || 'wife';
+        let currentInclinePct = 0;
+        let activeHistoryFilter = 'all';
+        let allWalks = [];
 
         function getActiveProfile() {
             return profiles[activeProfileId] || profiles.wife;
@@ -287,11 +356,11 @@
             document.getElementById('navMeWeight').textContent = `${profiles.me.weightKg}kg`;
 
             if (activeProfileId === 'wife') {
-                btnW.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white text-slate-900 shadow-sm";
-                btnM.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-500 hover:text-slate-800";
+                btnW.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white text-slate-900 shadow-sm";
+                btnM.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-500 hover:text-slate-800";
             } else {
-                btnM.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white text-slate-900 shadow-sm";
-                btnW.className = "flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-500 hover:text-slate-800";
+                btnM.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white text-slate-900 shadow-sm";
+                btnW.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-500 hover:text-slate-800";
             }
 
             document.getElementById('formProfileTarget').textContent = active.name;
@@ -303,7 +372,6 @@
             document.getElementById('drawerAvatar').textContent = active.avatar;
             document.getElementById('drawerProfileName').textContent = active.name;
             document.getElementById('drawerWeightInput').value = active.weightKg;
-            document.getElementById('drawerAgeInput').value = active.age;
         }
 
         function toggleSettingsDrawer() {
@@ -314,7 +382,6 @@
         function saveDrawerSettings() {
             const active = getActiveProfile();
             active.weightKg = parseFloat(document.getElementById('drawerWeightInput').value) || 70;
-            active.age = parseInt(document.getElementById('drawerAgeInput').value) || 30;
             profiles[activeProfileId] = active;
             localStorage.setItem('household_profiles', JSON.stringify(profiles));
             updateProfileUI();
@@ -323,19 +390,49 @@
         }
 
         // ==========================================
-        // 3. REAL-TIME COMPUTATION ENGINE
+        // 3. INCLINE & ACCURATE ACSM MET FORMULA
         // ==========================================
-        function calculateMET(mph) {
-            if (mph <= 0) return 1.0;
-            if (mph < 2.0) return 2.0;
-            if (mph < 2.5) return 2.8 + (mph - 2.0) * ((3.0 - 2.8) / 0.5);
-            if (mph < 3.0) return 3.0 + (mph - 2.5) * ((3.5 - 3.0) / 0.5);
-            if (mph < 3.5) return 3.5 + (mph - 3.0) * ((4.3 - 3.5) / 0.5);
-            if (mph < 4.0) return 4.3 + (mph - 3.5) * ((5.0 - 4.3) / 0.5);
-            if (mph < 4.5) return 5.0 + (mph - 4.0) * ((7.0 - 5.0) / 0.5);
-            if (mph < 5.0) return 7.0 + (mph - 4.5) * ((8.3 - 7.0) / 0.5);
-            return 8.3 + (mph - 5.0) * 1.5;
+        function setIncline(pct) {
+            currentInclinePct = pct;
+            [0, 3, 6, 10].forEach(p => {
+                const btn = document.getElementById(`incBtn${p}`);
+                if (p === pct) {
+                    btn.className = "py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-sm";
+                } else {
+                    btn.className = "py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800";
+                }
+            });
+
+            const labels = { 0: 'Flat (0%)', 3: 'Mild (+3%)', 6: 'Hill (+6%)', 10: 'Steep (+10%)' };
+            document.getElementById('inclineLabel').textContent = labels[pct];
+            liveCompute();
         }
+
+        // ACSM Walking Metabolic Equation:
+        // VO2 = 0.1 * S + 1.8 * S * G + 3.5
+        // Where S = speed in m/min, G = fraction grade, MET = VO2 / 3.5
+// Restores 4.0 MET Compendium baseline for flat walking, while scaling realistically with incline
+function calculateMET(speedKmh, inclinePct) {
+    if (speedKmh <= 0) return 1.0;
+    const mph = speedKmh * 0.621371;
+
+    // 1. Empirical Compendium baseline for flat walking
+    let baseMet = 2.0;
+    if (mph < 2.0) baseMet = 2.0;
+    else if (mph < 2.5) baseMet = 2.8 + (mph - 2.0) * ((3.0 - 2.8) / 0.5);
+    else if (mph < 3.0) baseMet = 3.0 + (mph - 2.5) * ((3.5 - 3.0) / 0.5);
+    else if (mph < 3.5) baseMet = 3.5 + (mph - 3.0) * ((4.3 - 3.5) / 0.5); // 3.3 mph = 4.0 MET
+    else if (mph < 4.0) baseMet = 4.3 + (mph - 3.5) * ((5.0 - 4.3) / 0.5);
+    else if (mph < 4.5) baseMet = 5.0 + (mph - 4.0) * ((7.0 - 5.0) / 0.5);
+    else baseMet = 7.0 + (mph - 4.5) * 1.5;
+
+    // 2. Extra metabolic demand added by incline slope
+    const speedMPerMin = (speedKmh * 1000) / 60;
+    const gradeFraction = inclinePct / 100;
+    const inclineMetDelta = (1.8 * speedMPerMin * gradeFraction) / 3.5;
+
+    return baseMet + inclineMetDelta;
+}
 
         let currentWalkData = null;
 
@@ -353,10 +450,11 @@
 
             const durationHours = durationMin / 60;
             const speedKmh = distanceKm / durationHours;
-            const speedMph = speedKmh * 0.621371;
             const paceMinPerKm = distanceKm > 0 ? durationMin / distanceKm : 0;
             const cadence = durationMin > 0 ? Math.round(steps / durationMin) : 0;
-            const met = calculateMET(speedMph);
+            
+            // Calculate MET including slope
+            const met = calculateMET(speedKmh, currentInclinePct);
 
             const grossCalories = Math.round(met * active.weightKg * durationHours);
             const netCalories = Math.round((met - 1) * active.weightKg * durationHours);
@@ -373,21 +471,39 @@
             document.getElementById('resPace').innerHTML = `${paceStr} <span class="text-[10px] font-normal text-slate-400">/km</span>`;
             document.getElementById('resSpeedKmh').textContent = isFinite(speedKmh) ? speedKmh.toFixed(1) : '0.0';
             document.getElementById('resCadence').textContent = cadence || 0;
-            document.getElementById('resMet').textContent = met.toFixed(1);
+            document.getElementById('resMet').textContent = `${met.toFixed(1)} MET`;
 
-            // Pace classification badge
+            // Effort Zone Feedback
             const paceBadge = document.getElementById('pacePill');
-            if (speedKmh < 4.0) {
-                paceBadge.textContent = "Leisurely Walk";
-                paceBadge.className = "text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 border border-slate-200";
-            } else if (speedKmh <= 5.8) {
-                paceBadge.textContent = "Brisk Walk (Zone 2)";
+            const zoneDesc = document.getElementById('zoneDescription');
+            const b1 = document.getElementById('barZ1');
+            const b2 = document.getElementById('barZ2');
+            const b3 = document.getElementById('barZ3');
+
+            if (met < 3.3) {
+                paceBadge.textContent = "Zone 1 (Recovery)";
+                paceBadge.className = "text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-100";
+                zoneDesc.textContent = "Easy Pace · Active Recovery";
+                b1.className = "h-full bg-blue-500 transition-all";
+                b2.className = "h-full bg-slate-200 transition-all";
+                b3.className = "h-full bg-slate-200 transition-all";
+            } else if (met <= 5.8) {
+                paceBadge.textContent = "Zone 2 (Fat Burn)";
                 paceBadge.className = "text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100";
+                zoneDesc.textContent = "Optimal Fat-Oxidation Zone";
+                b1.className = "h-full bg-blue-300 transition-all";
+                b2.className = "h-full bg-emerald-500 transition-all";
+                b3.className = "h-full bg-slate-200 transition-all";
             } else {
-                paceBadge.textContent = "Power Walk";
+                paceBadge.textContent = "Zone 3 (Power / Hill)";
                 paceBadge.className = "text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-100";
+                zoneDesc.textContent = "Vigorous Aerobic Conditioning";
+                b1.className = "h-full bg-blue-300 transition-all";
+                b2.className = "h-full bg-emerald-300 transition-all";
+                b3.className = "h-full bg-amber-500 transition-all";
             }
 
+            const incSuffix = currentInclinePct > 0 ? ` (${currentInclinePct}% inc)` : '';
             currentWalkData = {
                 profile_name: active.name,
                 steps,
@@ -396,7 +512,7 @@
                 weight_kg: active.weightKg,
                 gross_calories: grossCalories,
                 net_calories: netCalories,
-                pace: `${paceStr} /km`,
+                pace: `${paceStr} /km${incSuffix}`,
                 speed_kmh: parseFloat(speedKmh.toFixed(1)),
                 created_at: new Date().toISOString()
             };
@@ -439,7 +555,7 @@
         }
 
         // ==========================================
-        // 4. CLOUD SAVE & HISTORY
+        // 4. CLOUD SAVE, SCORECARD & HISTORY
         // ==========================================
         async function saveCurrentWalk() {
             if (!currentWalkData) liveCompute();
@@ -457,16 +573,15 @@
 
             const localWalks = JSON.parse(localStorage.getItem('household_walk_history') || '[]');
             localWalks.unshift(currentWalkData);
-            localStorage.setItem('household_walk_history', JSON.stringify(localWalks.slice(0, 30)));
+            localStorage.setItem('household_walk_history', JSON.stringify(localWalks.slice(0, 40)));
 
-            // Visual feedback
             btn.className = "w-full mt-2 bg-emerald-600 text-white font-bold py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all";
             btnText.textContent = `✓ Saved for ${active.name}!`;
 
             setTimeout(() => {
                 btn.className = "w-full mt-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all cursor-pointer";
                 btnText.textContent = `Save Walk for ${active.name}`;
-            }, 1500);
+            }, 1400);
 
             fetchWalks();
         }
@@ -479,7 +594,7 @@
                     .from('walks')
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .limit(20);
+                    .limit(30);
                 if (!error && data && data.length > 0) walks = data;
             }
 
@@ -487,19 +602,73 @@
                 walks = JSON.parse(localStorage.getItem('household_walk_history') || '[]');
             }
 
-            renderHistory(walks);
+            allWalks = walks;
+            updateTodayScorecard(walks);
+            renderFilteredHistory();
         }
 
-        function renderHistory(walks) {
+        function updateTodayScorecard(walks) {
+            const today = new Date().toDateString();
+            
+            const wifeWalksToday = walks.filter(w => w.profile_name === 'Wife' && new Date(w.created_at).toDateString() === today);
+            const meWalksToday = walks.filter(w => w.profile_name === 'Me' && new Date(w.created_at).toDateString() === today);
+
+            const sumWifeCal = wifeWalksToday.reduce((acc, w) => acc + (Number(w.net_calories) || 0), 0);
+            const sumWifeSteps = wifeWalksToday.reduce((acc, w) => acc + (Number(w.steps) || 0), 0);
+            const sumWifeDist = wifeWalksToday.reduce((acc, w) => acc + (Number(w.distance_km) || 0), 0);
+
+            const sumMeCal = meWalksToday.reduce((acc, w) => acc + (Number(w.net_calories) || 0), 0);
+            const sumMeSteps = meWalksToday.reduce((acc, w) => acc + (Number(w.steps) || 0), 0);
+            const sumMeDist = meWalksToday.reduce((acc, w) => acc + (Number(w.distance_km) || 0), 0);
+
+            document.getElementById('todayWifeCal').textContent = Math.round(sumWifeCal);
+            document.getElementById('todayWifeSteps').textContent = sumWifeSteps.toLocaleString();
+            document.getElementById('todayWifeDist').textContent = sumWifeDist.toFixed(1);
+
+            document.getElementById('todayMeCal').textContent = Math.round(sumMeCal);
+            document.getElementById('todayMeSteps').textContent = sumMeSteps.toLocaleString();
+            document.getElementById('todayMeDist').textContent = sumMeDist.toFixed(1);
+        }
+
+        function setHistoryFilter(filter) {
+            activeHistoryFilter = filter;
+            ['all', 'Wife', 'Me'].forEach(f => {
+                const btn = document.getElementById(`filterBtn${f}`);
+                if (f === filter) {
+                    btn.className = "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs";
+                } else {
+                    btn.className = "px-2.5 py-1 rounded-lg hover:text-slate-900";
+                }
+            });
+            renderFilteredHistory();
+        }
+
+        async function deleteWalk(id, index) {
+            if (!confirm("Delete this logged walk?")) return;
+
+            if (supabaseClient && id) {
+                await supabaseClient.from('walks').delete().eq('id', id);
+            }
+
+            let localWalks = JSON.parse(localStorage.getItem('household_walk_history') || '[]');
+            localWalks = localWalks.filter((w, i) => w.id !== id && i !== index);
+            localStorage.setItem('household_walk_history', JSON.stringify(localWalks));
+
+            fetchWalks();
+        }
+
+        function renderFilteredHistory() {
             const container = document.getElementById('historyContainer');
-            document.getElementById('historyCountBadge').textContent = `${walks.length} logged`;
+            const walks = activeHistoryFilter === 'all' 
+                ? allWalks 
+                : allWalks.filter(w => w.profile_name === activeHistoryFilter);
 
             if (!walks || walks.length === 0) {
-                container.innerHTML = `<div class="py-6 text-center text-slate-400 text-sm">No walk sessions logged yet.</div>`;
+                container.innerHTML = `<div class="py-6 text-center text-slate-400 text-sm">No walk sessions found.</div>`;
                 return;
             }
 
-            container.innerHTML = walks.map(w => {
+            container.innerHTML = walks.map((w, idx) => {
                 const dateObj = new Date(w.created_at);
                 const timeStr = dateObj.toLocaleDateString(undefined, {
                     month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -507,26 +676,27 @@
                 const avatar = w.profile_name === 'Wife' ? '👩' : '👨';
 
                 return `
-                    <div class="flex items-center justify-between p-3.5 bg-slate-50/70 hover:bg-slate-100/90 rounded-2xl border border-slate-100 transition-all">
+                    <div class="group flex items-center justify-between p-3.5 bg-slate-50/70 hover:bg-slate-100/90 rounded-2xl border border-slate-100 transition-all">
                         <div class="flex items-center gap-3">
                             <span class="text-xl">${avatar}</span>
                             <div>
-                                <p class="text-sm font-bold text-slate-800">${w.distance_km} km <span class="font-normal text-xs text-slate-400">in ${w.duration_min} min</span></p>
-                                <p class="text-[11px] text-slate-400">${w.profile_name} · ${timeStr} · ${Number(w.steps).toLocaleString()} steps</p>
+                                <p class="text-sm font-bold text-slate-800">${w.distance_km} km <span class="font-normal text-xs text-slate-400">in ${w.duration_min}m</span></p>
+                                <p class="text-[11px] text-slate-400">${w.profile_name} · ${timeStr} · ${Number(w.steps).toLocaleString()} steps · ${w.pace}</p>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <span class="text-sm font-black text-emerald-600">+${Math.round(w.net_calories)}</span>
-                            <span class="text-[10px] font-bold text-slate-400 block uppercase">Net Active</span>
+                        <div class="flex items-center gap-3">
+                            <div class="text-right">
+                                <span class="text-sm font-black text-emerald-600">+${Math.round(w.net_calories)}</span>
+                                <span class="text-[10px] font-bold text-slate-400 block uppercase">Net Active</span>
+                            </div>
+                            <button onclick="deleteWalk('${w.id || ''}', ${idx})" title="Delete entry"
+                                class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-500 transition-all p-1">
+                                &times;
+                            </button>
                         </div>
                     </div>
                 `;
             }).join('');
-        }
-
-        function clearHistory() {
-            localStorage.removeItem('household_walk_history');
-            fetchWalks();
         }
 
         // Initialize on load
