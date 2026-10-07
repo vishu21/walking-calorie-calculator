@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WalkCal — Precision Walk Tracker</title>
+    <title>WalkCal — Precision Walk & Deficit Calculator</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,103 +38,40 @@
                 <span class="text-lg font-black tracking-tight text-slate-900">Walk<span class="text-emerald-600">Cal</span></span>
             </div>
 
-            <!-- Profile Switcher & Settings -->
-            <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl border border-slate-200">
-                <button type="button" id="btnProfileWife" onclick="switchProfile('wife')"
-                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white text-slate-900 shadow-sm">
-                    <span>👩</span>
-                    <span>Wife</span>
-                    <span id="navWifeWeight" class="text-[10px] text-emerald-600 font-semibold">71kg</span>
-                </button>
-                <button type="button" id="btnProfileMe" onclick="switchProfile('me')"
-                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-500 hover:text-slate-800">
-                    <span>👨</span>
-                    <span>Me</span>
-                    <span id="navMeWeight" class="text-[10px] text-slate-400 font-normal">78kg</span>
-                </button>
-                <button type="button" onclick="toggleSettingsDrawer()" class="p-1.5 text-slate-400 hover:text-slate-700 transition-colors rounded-lg" title="Profile Settings">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                </button>
+            <!-- Controls: Unit Toggle & Body Weight -->
+            <div class="flex items-center gap-3">
+                <!-- Unit Switcher -->
+                <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-[11px] font-bold">
+                    <button type="button" id="unitMetricBtn" onclick="setUnit('metric')" 
+                        class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs transition-all">KM / KG</button>
+                    <button type="button" id="unitImperialBtn" onclick="setUnit('imperial')" 
+                        class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition-all">MI / LBS</button>
+                </div>
+
+                <!-- Weight Input -->
+                <div class="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Weight:</span>
+                    <input type="number" id="userWeightInput" step="0.5" value="71" 
+                        oninput="onWeightChanged(this.value)"
+                        class="w-14 bg-white text-center font-bold text-slate-900 text-xs py-1 rounded-lg border border-slate-200 outline-none focus:border-emerald-500">
+                    <span id="weightUnitLabel" class="text-xs font-semibold text-slate-400">kg</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Profile Specs Drawer -->
-    <div id="settingsDrawer" class="hidden max-w-5xl mx-auto px-4 sm:px-6 pt-4">
-        <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-sm">
-            <div class="flex items-center gap-2">
-                <span id="drawerAvatar" class="text-xl">👩</span>
-                <span class="text-sm font-bold text-slate-900">Editing <span id="drawerProfileName">Wife</span>'s Baseline:</span>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-1.5">
-                    <label class="text-xs font-semibold text-slate-500">Weight:</label>
-                    <input type="number" id="drawerWeightInput" step="0.5" class="w-20 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-sm font-bold outline-none focus:border-emerald-500">
-                    <span class="text-xs text-slate-400">kg</span>
-                </div>
-                <button type="button" onclick="saveDrawerSettings()" class="text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer">
-                    Save
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Workspace -->
-    <main class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
-
-        <!-- TODAY'S HOUSEHOLD PROGRESS SCORECARD -->
-        <section class="grid grid-cols-2 gap-4">
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                        <span class="text-base">👩</span> Wife Today
-                    </span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Daily Total</span>
-                </div>
-                <div class="flex items-baseline justify-between mt-1">
-                    <div>
-                        <span class="text-2xl sm:text-3xl font-black text-slate-900" id="todayWifeCal">0</span>
-                        <span class="text-xs font-bold text-emerald-600 ml-0.5">net kcal</span>
-                    </div>
-                    <div class="text-right text-xs font-semibold text-slate-400">
-                        <span id="todayWifeSteps" class="text-slate-700 font-bold">0</span> steps · <span id="todayWifeDist">0</span> km
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-sm">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                        <span class="text-base">👨</span> Me Today
-                    </span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-2 py-0.5 rounded-md">Daily Total</span>
-                </div>
-                <div class="flex items-baseline justify-between mt-1">
-                    <div>
-                        <span class="text-2xl sm:text-3xl font-black text-slate-900" id="todayMeCal">0</span>
-                        <span class="text-xs font-bold text-teal-600 ml-0.5">net kcal</span>
-                    </div>
-                    <div class="text-right text-xs font-semibold text-slate-400">
-                        <span id="todayMeSteps" class="text-slate-700 font-bold">0</span> steps · <span id="todayMeDist">0</span> km
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- WORKOUT CALCULATOR & DASHBOARD -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 pt-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <!-- LEFT: Quick Input Panel -->
-            <section class="lg:col-span-6 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm shadow-slate-200/40">
-                <div class="flex items-center justify-between mb-5">
+            <!-- LEFT COLUMN: Walk Inputs -->
+            <section class="lg:col-span-6 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm shadow-slate-200/40 space-y-5">
+                <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
-                            <span>Log Walk for</span>
-                            <span id="formProfileTarget" class="text-emerald-600">Wife</span>
-                        </h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Calculates with <span id="formWeightTarget">71</span> kg body weight</p>
+                        <h2 class="text-base font-bold text-slate-900">Walk Parameters</h2>
+                        <p class="text-xs text-slate-400">Values recalculate live as you adjust</p>
                     </div>
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">Live Sync</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">Live</span>
                 </div>
 
                 <div class="space-y-4">
@@ -144,7 +79,7 @@
                     <div>
                         <div class="flex justify-between items-center mb-1.5">
                             <label for="steps" class="text-xs font-bold uppercase tracking-wider text-slate-500">Steps</label>
-                            <span class="text-[11px] text-slate-400">auto-syncs with distance</span>
+                            <span class="text-[11px] text-slate-400">syncs with distance</span>
                         </div>
                         <div class="relative">
                             <input type="number" id="steps" value="6000" inputmode="numeric"
@@ -152,7 +87,7 @@
                             <span class="absolute right-4 top-3.5 text-xs font-bold text-slate-400 pointer-events-none">STEPS</span>
                         </div>
                         
-                        <!-- Step Chips -->
+                        <!-- Quick Step Chips -->
                         <div class="flex gap-2 mt-2">
                             <button type="button" onclick="setSteps(3000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">3k</button>
                             <button type="button" onclick="setSteps(5000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">5k</button>
@@ -170,7 +105,7 @@
                             <div class="relative">
                                 <input type="number" id="distance" step="0.1" value="4.0" inputmode="decimal"
                                     class="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-900 text-lg font-bold rounded-2xl border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 px-4 py-3 outline-none transition-all">
-                                <span class="absolute right-3.5 top-3.5 text-xs font-bold text-slate-400 pointer-events-none">KM</span>
+                                <span id="distUnitLabel" class="absolute right-3.5 top-3.5 text-xs font-bold text-slate-400 pointer-events-none">KM</span>
                             </div>
                         </div>
 
@@ -200,32 +135,25 @@
                             <span id="inclineLabel" class="text-xs font-bold text-emerald-600">Flat (0%)</span>
                         </div>
                         <div class="grid grid-cols-4 gap-2 bg-slate-100 p-1 rounded-2xl">
-                            <button type="button" onclick="setIncline(0)" id="incBtn0" class="py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-sm">0% Flat</button>
+                            <button type="button" onclick="setIncline(0)" id="incBtn0" class="py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-xs">0% Flat</button>
                             <button type="button" onclick="setIncline(3)" id="incBtn3" class="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800">3% Mild</button>
                             <button type="button" onclick="setIncline(6)" id="incBtn6" class="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800">6% Hill</button>
                             <button type="button" onclick="setIncline(10)" id="incBtn10" class="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800">10% Steep</button>
                         </div>
                     </div>
-
-                    <!-- Cloud Save Button -->
-                    <button type="button" id="saveLogBtn" onclick="saveCurrentWalk()"
-                        class="w-full mt-2 bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-bold py-4 px-4 rounded-2xl shadow-lg shadow-slate-900/10 flex items-center justify-center gap-2 transition-all cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="saveIcon"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
-                        <span id="saveBtnText">Save Walk for Wife</span>
-                    </button>
                 </div>
             </section>
 
-            <!-- RIGHT: Live Burn & Session Analytics -->
+            <!-- RIGHT COLUMN: Output Analytics, Food Equivalent & Projections -->
             <section class="lg:col-span-6 space-y-6">
                 
-                <!-- HERO CARD -->
+                <!-- HERO CALORIE OUTPUT -->
                 <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm shadow-slate-200/40 relative overflow-hidden">
                     <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                         <span id="pacePill" class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">
                             Brisk Walk (Zone 2)
                         </span>
-                        <div class="text-[11px] font-semibold text-slate-400">Target: <span id="heroProfileBadge" class="text-slate-700 font-bold">Wife</span></div>
+                        <div class="text-[11px] font-semibold text-slate-400">Baseline: <span id="displayWeight" class="text-slate-700 font-bold">71 kg</span></div>
                     </div>
 
                     <!-- HERO: Net Active Calories -->
@@ -238,7 +166,7 @@
                                 <span class="text-6xl font-black text-slate-900 tracking-tight transition-all" id="resNetCalories">160</span>
                                 <span class="text-xl font-bold text-emerald-600">kcal</span>
                             </div>
-                            <p class="text-xs text-slate-400 mt-1">Calorie deficit to count toward food intake</p>
+                            <p class="text-xs text-slate-400 mt-1">Deficit to count toward daily nutrition</p>
                         </div>
 
                         <!-- Subdued Gross Burn Pill -->
@@ -251,16 +179,16 @@
                         </div>
                     </div>
 
-                    <!-- Cardio Effort Gauge -->
+                    <!-- Effort Zone Gauge -->
                     <div class="mt-5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
                         <div class="flex justify-between items-center mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                             <span>Effort Zone</span>
-                            <span id="zoneDescription" class="text-emerald-700">Fat-Oxidation Sweet Spot</span>
+                            <span id="zoneDescription" class="text-emerald-700 font-bold">Optimal Fat-Oxidation Sweet Spot</span>
                         </div>
                         <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden flex">
-                            <div id="barZ1" class="h-full bg-blue-400 transition-all" style="width: 33%"></div>
+                            <div id="barZ1" class="h-full bg-blue-300 transition-all" style="width: 33%"></div>
                             <div id="barZ2" class="h-full bg-emerald-500 transition-all" style="width: 34%"></div>
-                            <div id="barZ3" class="h-full bg-amber-500 transition-all" style="width: 33%"></div>
+                            <div id="barZ3" class="h-full bg-slate-200 transition-all" style="width: 33%"></div>
                         </div>
                     </div>
 
@@ -268,11 +196,11 @@
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-100 text-center">
                         <div class="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Pace</span>
-                            <p class="text-sm font-bold text-slate-900" id="resPace">11:15 <span class="text-[10px] font-normal text-slate-400">/km</span></p>
+                            <p class="text-sm font-bold text-slate-900" id="resPace">11:15 <span id="paceUnitLabel" class="text-[10px] font-normal text-slate-400">/km</span></p>
                         </div>
                         <div class="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Speed</span>
-                            <p class="text-sm font-bold text-slate-900"><span id="resSpeedKmh">5.3</span> <span class="text-[10px] font-normal text-slate-400">km/h</span></p>
+                            <p class="text-sm font-bold text-slate-900"><span id="resSpeed">5.3</span> <span id="speedUnitLabel" class="text-[10px] font-normal text-slate-400">km/h</span></p>
                         </div>
                         <div class="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Cadence</span>
@@ -285,20 +213,59 @@
                     </div>
                 </div>
 
-                <!-- ACTIVITY LOG WITH FILTER TABS & DELETE -->
-                <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm shadow-slate-200/40">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-base font-bold text-slate-900">Walk History</h3>
-                        <!-- Filter Tabs -->
-<div class="flex gap-1 bg-slate-100 p-0.5 rounded-xl text-xs font-semibold">
-    <button type="button" onclick="setHistoryFilter('all')" id="filterBtnAll" class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-sm transition-all">All</button>
-    <button type="button" onclick="setHistoryFilter('wife')" id="filterBtnWife" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition-all">👩 Wife</button>
-    <button type="button" onclick="setHistoryFilter('me')" id="filterBtnMe" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition-all">👨 Me</button>
-</div>
+                <!-- 1. FOOD EQUIVALENT BURN CARD -->
+                <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-xs space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Energy Deficit Equivalent</span>
+                        <span class="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Real Food Match</span>
                     </div>
 
-                    <div id="historyContainer" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-                        <div class="py-6 text-center text-slate-400 text-sm">No walk sessions logged yet.</div>
+                    <div class="flex items-center gap-3.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                        <div id="foodHeroIcon" class="w-12 h-12 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center text-2xl shadow-xs">
+                            🍪
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xs text-slate-400 font-semibold">Burns off the equivalent of:</p>
+                            <p id="foodHeroTitle" class="text-sm font-black text-slate-900">1.0 Chocolate Chip Cookie</p>
+                            <p id="foodSubMatches" class="text-[11px] text-slate-500 mt-0.5">or 1.1 🥤 cans of soda · 1.5 🍌 bananas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. WEEKLY DEFICIT & CUMULATIVE FAT LOSS PROJECTION -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900">Projected Fat Loss Over Time</h3>
+                            <p class="text-xs text-slate-400">Consistent deficit without compensatory eating</p>
+                        </div>
+                        
+                        <!-- Frequency Selector -->
+                        <div class="flex gap-1 bg-slate-100 p-0.5 rounded-xl text-xs font-semibold">
+                            <button type="button" onclick="setFrequency(3)" id="freqBtn3" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900">3x/wk</button>
+                            <button type="button" onclick="setFrequency(4)" id="freqBtn4" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900">4x/wk</button>
+                            <button type="button" onclick="setFrequency(5)" id="freqBtn5" class="px-2 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold">5x/wk</button>
+                            <button type="button" onclick="setFrequency(7)" id="freqBtn7" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900">Daily</button>
+                        </div>
+                    </div>
+
+                    <!-- Projection Tiles -->
+                    <div class="grid grid-cols-3 gap-2.5 text-center">
+                        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Weekly Deficit</span>
+                            <div class="text-lg font-black text-emerald-600"><span id="projWeeklyCal">800</span> <span class="text-xs font-semibold">kcal</span></div>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">burned per week</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Monthly Loss</span>
+                            <div class="text-lg font-black text-slate-900" id="projMonthlyFat">0.45 kg</div>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">pure body fat</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Annual Impact</span>
+                            <div class="text-lg font-black text-slate-900" id="projAnnualFat">5.4 kg</div>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">sustainable loss</span>
+                        </div>
                     </div>
                 </div>
 
@@ -308,84 +275,74 @@
 
     <script>
         // ==========================================
-        // 1. SUPABASE CLIENT
+        // 1. STATE & UNIT INITIALIZATION
         // ==========================================
-        const SUPABASE_URL = "https://yvqsllaijzipaihblcbw.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_I6WtuC9L9Y4hRk5m2jxgAw_20bjRehu";
-
-        let supabaseClient = null;
-        try {
-            if (SUPABASE_URL && SUPABASE_KEY) {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
-        } catch (e) {
-            console.warn("Supabase init fallback:", e);
-        }
-
-        // ==========================================
-        // 2. DUAL PROFILES STATE
-        // ==========================================
-        const DEFAULT_PROFILES = {
-            wife: { id: 'wife', name: 'Wife', avatar: '👩', weightKg: 71 },
-            me: { id: 'me', name: 'Me', avatar: '👨', weightKg: 78 }
-        };
-
-        let profiles = JSON.parse(localStorage.getItem('household_profiles')) || DEFAULT_PROFILES;
-        let activeProfileId = localStorage.getItem('active_profile_id') || 'wife';
+        let currentUnit = localStorage.getItem('walkcal_unit') || 'metric'; // 'metric' or 'imperial'
+        let currentWeightKg = parseFloat(localStorage.getItem('user_weight_kg')) || 71;
         let currentInclinePct = 0;
-        let activeHistoryFilter = 'all';
-        let allWalks = [];
+        let routineFrequency = 5; // sessions per week
 
-        function getActiveProfile() {
-            return profiles[activeProfileId] || profiles.wife;
-        }
+        // ==========================================
+        // 2. UNIT SWITCHER LOGIC
+        // ==========================================
+        function setUnit(unit) {
+            if (currentUnit === unit) return;
+            const distInput = document.getElementById('distance');
+            let currentDist = parseFloat(distInput.value) || 0;
 
-        function switchProfile(id) {
-            activeProfileId = id;
-            localStorage.setItem('active_profile_id', id);
-            updateProfileUI();
+            if (unit === 'imperial') {
+                // Switching from Metric -> Imperial
+                currentUnit = 'imperial';
+                distInput.value = (currentDist * 0.621371).toFixed(1);
+            } else {
+                // Switching from Imperial -> Metric
+                currentUnit = 'metric';
+                distInput.value = (currentDist / 0.621371).toFixed(1);
+            }
+
+            localStorage.setItem('walkcal_unit', currentUnit);
+            updateUnitUI();
             liveCompute();
         }
 
-        function updateProfileUI() {
-            const active = getActiveProfile();
-            const btnW = document.getElementById('btnProfileWife');
-            const btnM = document.getElementById('btnProfileMe');
+        function updateUnitUI() {
+            const isMetric = currentUnit === 'metric';
+            const metricBtn = document.getElementById('unitMetricBtn');
+            const imperialBtn = document.getElementById('unitImperialBtn');
+            const weightInput = document.getElementById('userWeightInput');
 
-            document.getElementById('navWifeWeight').textContent = `${profiles.wife.weightKg}kg`;
-            document.getElementById('navMeWeight').textContent = `${profiles.me.weightKg}kg`;
-
-            if (activeProfileId === 'wife') {
-                btnW.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white text-slate-900 shadow-sm";
-                btnM.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-500 hover:text-slate-800";
+            if (isMetric) {
+                metricBtn.className = "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold transition-all";
+                imperialBtn.className = "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 font-semibold transition-all";
+                document.getElementById('weightUnitLabel').textContent = 'kg';
+                document.getElementById('distUnitLabel').textContent = 'KM';
+                document.getElementById('paceUnitLabel').textContent = '/km';
+                document.getElementById('speedUnitLabel').textContent = 'km/h';
+                weightInput.value = Math.round(currentWeightKg * 10) / 10;
+                document.getElementById('displayWeight').textContent = `${weightInput.value} kg`;
             } else {
-                btnM.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer bg-white text-slate-900 shadow-sm";
-                btnW.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-500 hover:text-slate-800";
+                imperialBtn.className = "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold transition-all";
+                metricBtn.className = "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 font-semibold transition-all";
+                document.getElementById('weightUnitLabel').textContent = 'lbs';
+                document.getElementById('distUnitLabel').textContent = 'MI';
+                document.getElementById('paceUnitLabel').textContent = '/mi';
+                document.getElementById('speedUnitLabel').textContent = 'mph';
+                const lbsVal = Math.round(currentWeightKg * 2.20462);
+                weightInput.value = lbsVal;
+                document.getElementById('displayWeight').textContent = `${lbsVal} lbs`;
             }
-
-            document.getElementById('formProfileTarget').textContent = active.name;
-            document.getElementById('formWeightTarget').textContent = active.weightKg;
-            document.getElementById('saveBtnText').textContent = `Save Walk for ${active.name}`;
-            document.getElementById('heroProfileBadge').textContent = active.name;
-
-            // Drawer sync
-            document.getElementById('drawerAvatar').textContent = active.avatar;
-            document.getElementById('drawerProfileName').textContent = active.name;
-            document.getElementById('drawerWeightInput').value = active.weightKg;
         }
 
-        function toggleSettingsDrawer() {
-            const drawer = document.getElementById('settingsDrawer');
-            drawer.classList.toggle('hidden');
-        }
-
-        function saveDrawerSettings() {
-            const active = getActiveProfile();
-            active.weightKg = parseFloat(document.getElementById('drawerWeightInput').value) || 70;
-            profiles[activeProfileId] = active;
-            localStorage.setItem('household_profiles', JSON.stringify(profiles));
-            updateProfileUI();
-            toggleSettingsDrawer();
+        function onWeightChanged(val) {
+            const num = parseFloat(val) || 0;
+            if (currentUnit === 'metric') {
+                currentWeightKg = num;
+                document.getElementById('displayWeight').textContent = `${num} kg`;
+            } else {
+                currentWeightKg = num / 2.20462;
+                document.getElementById('displayWeight').textContent = `${num} lbs`;
+            }
+            localStorage.setItem('user_weight_kg', currentWeightKg);
             liveCompute();
         }
 
@@ -397,7 +354,7 @@
             [0, 3, 6, 10].forEach(p => {
                 const btn = document.getElementById(`incBtn${p}`);
                 if (p === pct) {
-                    btn.className = "py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-sm";
+                    btn.className = "py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-xs";
                 } else {
                     btn.className = "py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800";
                 }
@@ -408,68 +365,73 @@
             liveCompute();
         }
 
-        // ACSM Walking Metabolic Equation:
-        // VO2 = 0.1 * S + 1.8 * S * G + 3.5
-        // Where S = speed in m/min, G = fraction grade, MET = VO2 / 3.5
-// Restores 4.0 MET Compendium baseline for flat walking, while scaling realistically with incline
-function calculateMET(speedKmh, inclinePct) {
-    if (speedKmh <= 0) return 1.0;
-    const mph = speedKmh * 0.621371;
+        function calculateMET(speedKmh, inclinePct) {
+            if (speedKmh <= 0) return 1.0;
+            const mph = speedKmh * 0.621371;
 
-    // 1. Empirical Compendium baseline for flat walking
-    let baseMet = 2.0;
-    if (mph < 2.0) baseMet = 2.0;
-    else if (mph < 2.5) baseMet = 2.8 + (mph - 2.0) * ((3.0 - 2.8) / 0.5);
-    else if (mph < 3.0) baseMet = 3.0 + (mph - 2.5) * ((3.5 - 3.0) / 0.5);
-    else if (mph < 3.5) baseMet = 3.5 + (mph - 3.0) * ((4.3 - 3.5) / 0.5); // 3.3 mph = 4.0 MET
-    else if (mph < 4.0) baseMet = 4.3 + (mph - 3.5) * ((5.0 - 4.3) / 0.5);
-    else if (mph < 4.5) baseMet = 5.0 + (mph - 4.0) * ((7.0 - 5.0) / 0.5);
-    else baseMet = 7.0 + (mph - 4.5) * 1.5;
+            // Compendium baseline for flat ground (3.3 mph = 4.0 MET)
+            let baseMet = 2.0;
+            if (mph < 2.0) baseMet = 2.0;
+            else if (mph < 2.5) baseMet = 2.8 + (mph - 2.0) * ((3.0 - 2.8) / 0.5);
+            else if (mph < 3.0) baseMet = 3.0 + (mph - 2.5) * ((3.5 - 3.0) / 0.5);
+            else if (mph < 3.5) baseMet = 3.5 + (mph - 3.0) * ((4.3 - 3.5) / 0.5);
+            else if (mph < 4.0) baseMet = 4.3 + (mph - 3.5) * ((5.0 - 4.3) / 0.5);
+            else if (mph < 4.5) baseMet = 5.0 + (mph - 4.0) * ((7.0 - 5.0) / 0.5);
+            else baseMet = 7.0 + (mph - 4.5) * 1.5;
 
-    // 2. Extra metabolic demand added by incline slope
-    const speedMPerMin = (speedKmh * 1000) / 60;
-    const gradeFraction = inclinePct / 100;
-    const inclineMetDelta = (1.8 * speedMPerMin * gradeFraction) / 3.5;
+            // ACSM Incline demand
+            const speedMPerMin = (speedKmh * 1000) / 60;
+            const gradeFraction = inclinePct / 100;
+            const inclineMetDelta = (1.8 * speedMPerMin * gradeFraction) / 3.5;
 
-    return baseMet + inclineMetDelta;
-}
+            return baseMet + inclineMetDelta;
+        }
 
-        let currentWalkData = null;
-
+        // ==========================================
+        // 4. REAL-TIME COMPUTATION ENGINE
+        // ==========================================
         function liveCompute() {
-            const active = getActiveProfile();
             const stepsInput = document.getElementById('steps');
             const distInput = document.getElementById('distance');
             const durInput = document.getElementById('duration');
 
             let steps = parseInt(stepsInput.value) || 0;
-            let distanceKm = parseFloat(distInput.value) || 0;
+            let enteredDistance = parseFloat(distInput.value) || 0;
             let durationMin = parseInt(durInput.value) || 0;
 
-            if (durationMin <= 0 || (steps <= 0 && distanceKm <= 0)) return;
+            if (durationMin <= 0 || (steps <= 0 && enteredDistance <= 0)) return;
 
             const durationHours = durationMin / 60;
-            const speedKmh = distanceKm / durationHours;
-            const paceMinPerKm = distanceKm > 0 ? durationMin / distanceKm : 0;
-            const cadence = durationMin > 0 ? Math.round(steps / durationMin) : 0;
             
-            // Calculate MET including slope
+            // Standardize distance to KM internally for caloric precision
+            const distanceKm = currentUnit === 'metric' ? enteredDistance : enteredDistance * 1.60934;
+            const speedKmh = distanceKm / durationHours;
             const met = calculateMET(speedKmh, currentInclinePct);
 
-            const grossCalories = Math.round(met * active.weightKg * durationHours);
-            const netCalories = Math.round((met - 1) * active.weightKg * durationHours);
+            const grossCalories = Math.round(met * currentWeightKg * durationHours);
+            const netCalories = Math.round((met - 1) * currentWeightKg * durationHours);
             const restingCalories = Math.max(0, grossCalories - netCalories);
 
-            const paceMinutes = Math.floor(paceMinPerKm);
-            const paceSeconds = Math.round((paceMinPerKm - paceMinutes) * 60);
-            const paceStr = distanceKm > 0 ? `${paceMinutes}:${paceSeconds.toString().padStart(2, '0')}` : '--:--';
+            // Display Speed & Pace according to current unit
+            let displaySpeed = 0;
+            let paceStr = '--:--';
 
-            // DOM Updates
+            if (enteredDistance > 0) {
+                displaySpeed = enteredDistance / durationHours;
+                const paceMinPerUnit = durationMin / enteredDistance;
+                const paceMinutes = Math.floor(paceMinPerUnit);
+                const paceSeconds = Math.round((paceMinPerUnit - paceMinutes) * 60);
+                paceStr = `${paceMinutes}:${paceSeconds.toString().padStart(2, '0')}`;
+            }
+
+            const cadence = durationMin > 0 ? Math.round(steps / durationMin) : 0;
+
+            // Update DOM
             document.getElementById('resNetCalories').textContent = isNaN(netCalories) ? 0 : netCalories;
             document.getElementById('resGrossCalories').textContent = isNaN(grossCalories) ? 0 : grossCalories;
             document.getElementById('resRestingCalories').textContent = isNaN(restingCalories) ? 0 : restingCalories;
-            document.getElementById('resPace').innerHTML = `${paceStr} <span class="text-[10px] font-normal text-slate-400">/km</span>`;
-            document.getElementById('resSpeedKmh').textContent = isFinite(speedKmh) ? speedKmh.toFixed(1) : '0.0';
+            document.getElementById('resPace').innerHTML = `${paceStr} <span class="text-[10px] font-normal text-slate-400">${currentUnit === 'metric' ? '/km' : '/mi'}</span>`;
+            document.getElementById('resSpeed').textContent = isFinite(displaySpeed) ? displaySpeed.toFixed(1) : '0.0';
             document.getElementById('resCadence').textContent = cadence || 0;
             document.getElementById('resMet').textContent = `${met.toFixed(1)} MET`;
 
@@ -490,7 +452,7 @@ function calculateMET(speedKmh, inclinePct) {
             } else if (met <= 5.8) {
                 paceBadge.textContent = "Zone 2 (Fat Burn)";
                 paceBadge.className = "text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100";
-                zoneDesc.textContent = "Optimal Fat-Oxidation Zone";
+                zoneDesc.textContent = "Optimal Fat-Oxidation Sweet Spot";
                 b1.className = "h-full bg-blue-300 transition-all";
                 b2.className = "h-full bg-emerald-500 transition-all";
                 b3.className = "h-full bg-slate-200 transition-all";
@@ -503,35 +465,113 @@ function calculateMET(speedKmh, inclinePct) {
                 b3.className = "h-full bg-amber-500 transition-all";
             }
 
-            const incSuffix = currentInclinePct > 0 ? ` (${currentInclinePct}% inc)` : '';
-            currentWalkData = {
-                profile_name: active.name,
-                steps,
-                distance_km: distanceKm,
-                duration_min: durationMin,
-                weight_kg: active.weightKg,
-                gross_calories: grossCalories,
-                net_calories: netCalories,
-                pace: `${paceStr} /km${incSuffix}`,
-                speed_kmh: parseFloat(speedKmh.toFixed(1)),
-                created_at: new Date().toISOString()
-            };
+            // Update Features 1 & 3
+            updateFoodEquivalent(netCalories);
+            updateProjections(netCalories);
         }
 
-        // Auto-estimate distance from steps
+        // ==========================================
+        // 5. FOOD EQUIVALENT BURN ENGINE
+        // ==========================================
+        const FOOD_BENCHMARKS = [
+            { name: 'Chocolate Chip Cookie', icon: '🍪', cal: 160 },
+            { name: 'Can of Cola', icon: '🥤', cal: 140 },
+            { name: 'Medium Banana', icon: '🍌', cal: 105 },
+            { name: 'Slice of Cheese Pizza', icon: '🍕', cal: 285 },
+            { name: 'Glazed Donut', icon: '🍩', cal: 260 },
+            { name: 'Glass of Wine', icon: '🍷', cal: 125 },
+            { name: 'Handful of Roasted Almonds (30g)', icon: '🥜', cal: 170 },
+            { name: 'Avocado', icon: '🥑', cal: 240 }
+        ];
+
+        function updateFoodEquivalent(netCal) {
+            if (netCal <= 0) {
+                document.getElementById('foodHeroTitle').textContent = 'Walk to calculate food burn';
+                document.getElementById('foodHeroIcon').textContent = '🥗';
+                document.getElementById('foodSubMatches').textContent = '--';
+                return;
+            }
+
+            // Select closest primary single item
+            let closestItem = FOOD_BENCHMARKS[0];
+            let minDiff = Math.abs(netCal - closestItem.cal);
+
+            FOOD_BENCHMARKS.forEach(item => {
+                const diff = Math.abs(netCal - item.cal);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestItem = item;
+                }
+            });
+
+            const multiple = (netCal / closestItem.cal).toFixed(1);
+            document.getElementById('foodHeroIcon').textContent = closestItem.icon;
+            document.getElementById('foodHeroTitle').textContent = `${multiple} × ${closestItem.name} (${Math.round(netCal)} kcal)`;
+
+            // Sub-comparisons
+            const sodaCount = (netCal / 140).toFixed(1);
+            const bananaCount = (netCal / 105).toFixed(1);
+            const wineCount = (netCal / 125).toFixed(1);
+
+            document.getElementById('foodSubMatches').textContent = 
+                `or ${sodaCount} 🥤 cans of soda · ${bananaCount} 🍌 bananas · ${wineCount} 🍷 glasses of wine`;
+        }
+
+        // ==========================================
+        // 6. FAT LOSS & DEFICIT PROJECTION ENGINE
+        // ==========================================
+        function setFrequency(freq) {
+            routineFrequency = freq;
+            [3, 4, 5, 7].forEach(f => {
+                const btn = document.getElementById(`freqBtn${f}`);
+                if (f === freq) {
+                    btn.className = "px-2 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold";
+                } else {
+                    btn.className = "px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900";
+                }
+            });
+            liveCompute();
+        }
+
+        function updateProjections(netCalPerWalk) {
+            const weeklyDeficit = netCalPerWalk * routineFrequency;
+            const monthlyDeficit = weeklyDeficit * (52 / 12);
+            const annualDeficit = weeklyDeficit * 52;
+
+            document.getElementById('projWeeklyCal').textContent = Math.round(weeklyDeficit).toLocaleString();
+
+            if (currentUnit === 'metric') {
+                // 1 kg of body fat ≈ 7,700 kcal
+                const monthlyKg = (monthlyDeficit / 7700).toFixed(2);
+                const annualKg = (annualDeficit / 7700).toFixed(1);
+                document.getElementById('projMonthlyFat').textContent = `${monthlyKg} kg`;
+                document.getElementById('projAnnualFat').textContent = `${annualKg} kg`;
+            } else {
+                // 1 lb of body fat ≈ 3,500 kcal
+                const monthlyLbs = (monthlyDeficit / 3500).toFixed(2);
+                const annualLbs = (annualDeficit / 3500).toFixed(1);
+                document.getElementById('projMonthlyFat').textContent = `${monthlyLbs} lbs`;
+                document.getElementById('projAnnualFat').textContent = `${annualLbs} lbs`;
+            }
+        }
+
+        // ==========================================
+        // 7. INPUT LISTENERS & AUTO-SYNC
+        // ==========================================
         document.getElementById('steps').addEventListener('input', (e) => {
             const steps = parseInt(e.target.value) || 0;
             if (steps > 0) {
-                document.getElementById('distance').value = (steps * 0.00067).toFixed(1);
+                const dist = currentUnit === 'metric' ? (steps * 0.00067) : (steps * 0.0004163);
+                document.getElementById('distance').value = dist.toFixed(1);
             }
             liveCompute();
         });
 
-        // Auto-estimate steps from distance
         document.getElementById('distance').addEventListener('input', (e) => {
             const dist = parseFloat(e.target.value) || 0;
             if (dist > 0) {
-                document.getElementById('steps').value = Math.round(dist / 0.00067);
+                const st = currentUnit === 'metric' ? Math.round(dist / 0.00067) : Math.round(dist / 0.0004163);
+                document.getElementById('steps').value = st;
             }
             liveCompute();
         });
@@ -540,7 +580,8 @@ function calculateMET(speedKmh, inclinePct) {
 
         function setSteps(num) {
             document.getElementById('steps').value = num;
-            document.getElementById('distance').value = (num * 0.00067).toFixed(1);
+            const dist = currentUnit === 'metric' ? (num * 0.00067) : (num * 0.0004163);
+            document.getElementById('distance').value = dist.toFixed(1);
             liveCompute();
         }
 
@@ -554,170 +595,10 @@ function calculateMET(speedKmh, inclinePct) {
             liveCompute();
         }
 
-        // ==========================================
-        // 4. CLOUD SAVE, SCORECARD & HISTORY
-        // ==========================================
-        async function saveCurrentWalk() {
-            if (!currentWalkData) liveCompute();
-            if (!currentWalkData) return;
-
-            const active = getActiveProfile();
-            const btn = document.getElementById('saveLogBtn');
-            const btnText = document.getElementById('saveBtnText');
-            btnText.textContent = "Saving...";
-
-            if (supabaseClient) {
-                const { error } = await supabaseClient.from('walks').insert([currentWalkData]);
-                if (error) console.error("Supabase insert error:", error);
-            }
-
-            const localWalks = JSON.parse(localStorage.getItem('household_walk_history') || '[]');
-            localWalks.unshift(currentWalkData);
-            localStorage.setItem('household_walk_history', JSON.stringify(localWalks.slice(0, 40)));
-
-            btn.className = "w-full mt-2 bg-emerald-600 text-white font-bold py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all";
-            btnText.textContent = `✓ Saved for ${active.name}!`;
-
-            setTimeout(() => {
-                btn.className = "w-full mt-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all cursor-pointer";
-                btnText.textContent = `Save Walk for ${active.name}`;
-            }, 1400);
-
-            fetchWalks();
-        }
-
-        async function fetchWalks() {
-            let walks = [];
-
-            if (supabaseClient) {
-                const { data, error } = await supabaseClient
-                    .from('walks')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(30);
-                if (!error && data && data.length > 0) walks = data;
-            }
-
-            if (walks.length === 0) {
-                walks = JSON.parse(localStorage.getItem('household_walk_history') || '[]');
-            }
-
-            allWalks = walks;
-            updateTodayScorecard(walks);
-            renderFilteredHistory();
-        }
-
-        function updateTodayScorecard(walks) {
-            const today = new Date().toDateString();
-            
-            const wifeWalksToday = walks.filter(w => w.profile_name === 'Wife' && new Date(w.created_at).toDateString() === today);
-            const meWalksToday = walks.filter(w => w.profile_name === 'Me' && new Date(w.created_at).toDateString() === today);
-
-            const sumWifeCal = wifeWalksToday.reduce((acc, w) => acc + (Number(w.net_calories) || 0), 0);
-            const sumWifeSteps = wifeWalksToday.reduce((acc, w) => acc + (Number(w.steps) || 0), 0);
-            const sumWifeDist = wifeWalksToday.reduce((acc, w) => acc + (Number(w.distance_km) || 0), 0);
-
-            const sumMeCal = meWalksToday.reduce((acc, w) => acc + (Number(w.net_calories) || 0), 0);
-            const sumMeSteps = meWalksToday.reduce((acc, w) => acc + (Number(w.steps) || 0), 0);
-            const sumMeDist = meWalksToday.reduce((acc, w) => acc + (Number(w.distance_km) || 0), 0);
-
-            document.getElementById('todayWifeCal').textContent = Math.round(sumWifeCal);
-            document.getElementById('todayWifeSteps').textContent = sumWifeSteps.toLocaleString();
-            document.getElementById('todayWifeDist').textContent = sumWifeDist.toFixed(1);
-
-            document.getElementById('todayMeCal').textContent = Math.round(sumMeCal);
-            document.getElementById('todayMeSteps').textContent = sumMeSteps.toLocaleString();
-            document.getElementById('todayMeDist').textContent = sumMeDist.toFixed(1);
-        }
-
-        function setHistoryFilter(filter) {
-    activeHistoryFilter = filter.toLowerCase();
-
-    const tabs = [
-        { key: 'all', id: 'filterBtnAll' },
-        { key: 'wife', id: 'filterBtnWife' },
-        { key: 'me', id: 'filterBtnMe' }
-    ];
-
-    tabs.forEach(({ key, id }) => {
-        const btn = document.getElementById(id);
-        if (!btn) return;
-
-        if (key === activeHistoryFilter) {
-            btn.className = "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-sm font-bold transition-all";
-        } else {
-            btn.className = "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 font-semibold transition-all";
-        }
-    });
-
-    renderFilteredHistory();
-}
-
-function renderFilteredHistory() {
-    const container = document.getElementById('historyContainer');
-    if (!container) return;
-
-    // Case-insensitive filtering so both 'Wife' and 'wife' match
-    const walks = activeHistoryFilter === 'all'
-        ? allWalks
-        : allWalks.filter(w => (w.profile_name || '').toLowerCase() === activeHistoryFilter);
-
-    if (!walks || walks.length === 0) {
-        container.innerHTML = `<div class="py-6 text-center text-slate-400 text-sm">No walk sessions found.</div>`;
-        return;
-    }
-
-    container.innerHTML = walks.map((w, idx) => {
-        const dateObj = new Date(w.created_at);
-        const timeStr = dateObj.toLocaleDateString(undefined, {
-            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
-        const isWife = (w.profile_name || '').toLowerCase() === 'wife';
-        const avatar = isWife ? '👩' : '👨';
-
-        return `
-            <div class="group flex items-center justify-between p-3.5 bg-slate-50/70 hover:bg-slate-100/90 rounded-2xl border border-slate-100 transition-all">
-                <div class="flex items-center gap-3">
-                    <span class="text-xl">${avatar}</span>
-                    <div>
-                        <p class="text-sm font-bold text-slate-800">${w.distance_km} km <span class="font-normal text-xs text-slate-400">in ${w.duration_min}m</span></p>
-                        <p class="text-[11px] text-slate-400">${w.profile_name} · ${timeStr} · ${Number(w.steps).toLocaleString()} steps · ${w.pace}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="text-right">
-                        <span class="text-sm font-black text-emerald-600">+${Math.round(w.net_calories)}</span>
-                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Net Active</span>
-                    </div>
-                    <button onclick="deleteWalk('${w.id || ''}', ${idx})" title="Delete entry"
-                        class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-500 transition-all p-1 text-lg font-bold">
-                        &times;
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-        async function deleteWalk(id, index) {
-            if (!confirm("Delete this logged walk?")) return;
-
-            if (supabaseClient && id) {
-                await supabaseClient.from('walks').delete().eq('id', id);
-            }
-
-            let localWalks = JSON.parse(localStorage.getItem('household_walk_history') || '[]');
-            localWalks = localWalks.filter((w, i) => w.id !== id && i !== index);
-            localStorage.setItem('household_walk_history', JSON.stringify(localWalks));
-
-            fetchWalks();
-        }
-
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
-            updateProfileUI();
+            updateUnitUI();
             liveCompute();
-            fetchWalks();
         });
     </script>
 </body>
