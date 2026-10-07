@@ -3,151 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WalkCal — Precision Walk & Deficit Calculator</title>
-    <!-- Tailwind CSS -->
+    <title>WalkCal — Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-        }
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
 <body class="min-h-screen text-slate-800 antialiased selection:bg-emerald-500 selection:text-white pb-16">
 
-    <!-- Top Navigation Bar -->
+    <!-- Shared Navigation Bar -->
     <header class="w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4v16"/><path d="M17 4v16"/><path d="M19 8H5"/><path d="M19 16H5"/></svg>
-                </div>
-                <span class="text-lg font-black tracking-tight text-slate-900">Walk<span class="text-emerald-600">Cal</span></span>
+            <div class="flex items-center gap-6">
+                <a href="index.html" class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 font-black">
+                        W
+                    </div>
+                    <span class="text-lg font-black tracking-tight text-slate-900">Walk<span class="text-emerald-600">Cal</span></span>
+                </a>
+
+                <!-- Module Navigation Tabs -->
+                <nav class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-bold">
+                    <a href="index.html" class="px-3 py-1.5 rounded-xl bg-white text-slate-900 shadow-xs">🚶 Calculator</a>
+                    <a href="food.html" class="px-3 py-1.5 rounded-xl text-slate-500 hover:text-slate-900 transition-colors">🍔 Food Rewards</a>
+                    <a href="projections.html" class="px-3 py-1.5 rounded-xl text-slate-500 hover:text-slate-900 transition-colors">📈 Projections</a>
+                </nav>
             </div>
 
-            <!-- Controls: Unit Toggle & Body Weight -->
             <div class="flex items-center gap-3">
-                <!-- Unit Switcher -->
                 <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-[11px] font-bold">
-                    <button type="button" id="unitMetricBtn" onclick="setUnit('metric')" 
-                        class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs transition-all">KM / KG</button>
-                    <button type="button" id="unitImperialBtn" onclick="setUnit('imperial')" 
-                        class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition-all">MI / LBS</button>
+                    <button type="button" id="unitMetricBtn" onclick="setUnit('metric')" class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs">KM / KG</button>
+                    <button type="button" id="unitImperialBtn" onclick="setUnit('imperial')" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900">MI / LBS</button>
                 </div>
-
-                <!-- Weight Input -->
                 <div class="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
                     <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Weight:</span>
-                    <input type="number" id="userWeightInput" step="0.5" value="71" 
-                        oninput="onWeightChanged(this.value)"
+                    <input type="number" id="userWeightInput" step="0.5" value="71" oninput="onWeightChanged(this.value)"
                         class="w-14 bg-white text-center font-bold text-slate-900 text-xs py-1 rounded-lg border border-slate-200 outline-none focus:border-emerald-500">
                     <span id="weightUnitLabel" class="text-xs font-semibold text-slate-400">kg</span>
                 </div>
             </div>
         </div>
+
+        <!-- Mobile Navigation Row -->
+        <div class="md:hidden flex border-t border-slate-100 px-4 py-2 bg-slate-50 justify-around text-xs font-bold">
+            <a href="index.html" class="text-emerald-600">🚶 Calculator</a>
+            <a href="food.html" class="text-slate-500">🍔 Food Rewards</a>
+            <a href="projections.html" class="text-slate-500">📈 Projections</a>
+        </div>
     </header>
 
-    <!-- Main Workspace -->
+    <!-- Main Calculator Workspace -->
     <main class="max-w-5xl mx-auto px-4 sm:px-6 pt-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <!-- LEFT COLUMN: Walk Inputs -->
+            <!-- LEFT: Inputs -->
             <section class="lg:col-span-6 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm shadow-slate-200/40 space-y-5">
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-base font-bold text-slate-900">Walk Parameters</h2>
-                        <p class="text-xs text-slate-400">Values recalculate live as you adjust</p>
+                        <p class="text-xs text-slate-400">Calculates instantly using body weight</p>
                     </div>
                     <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">Live</span>
                 </div>
 
                 <div class="space-y-4">
-                    <!-- Steps Input -->
                     <div>
-                        <div class="flex justify-between items-center mb-1.5">
-                            <label for="steps" class="text-xs font-bold uppercase tracking-wider text-slate-500">Steps</label>
-                            <span class="text-[11px] text-slate-400">syncs with distance</span>
-                        </div>
-                        <div class="relative">
-                            <input type="number" id="steps" value="6000" inputmode="numeric"
-                                class="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-900 text-lg font-bold rounded-2xl border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 px-4 py-3 outline-none transition-all">
-                            <span class="absolute right-4 top-3.5 text-xs font-bold text-slate-400 pointer-events-none">STEPS</span>
-                        </div>
-                        
-                        <!-- Quick Step Chips -->
+                        <label for="steps" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Steps</label>
+                        <input type="number" id="steps" value="6000" inputmode="numeric"
+                            class="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-900 text-lg font-bold rounded-2xl border border-slate-200 focus:border-emerald-500 px-4 py-3 outline-none">
                         <div class="flex gap-2 mt-2">
-                            <button type="button" onclick="setSteps(3000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">3k</button>
-                            <button type="button" onclick="setSteps(5000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">5k</button>
-                            <button type="button" onclick="setSteps(6000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">6k</button>
-                            <button type="button" onclick="setSteps(8000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">8k</button>
-                            <button type="button" onclick="setSteps(10000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">10k</button>
-                            <button type="button" onclick="addSteps(500)" class="text-xs font-bold px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors ml-auto">+500</button>
+                            <button type="button" onclick="setSteps(3000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600">3k</button>
+                            <button type="button" onclick="setSteps(5000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600">5k</button>
+                            <button type="button" onclick="setSteps(6000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600">6k</button>
+                            <button type="button" onclick="setSteps(8000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600">8k</button>
+                            <button type="button" onclick="setSteps(10000)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600">10k</button>
+                            <button type="button" onclick="addSteps(500)" class="text-xs font-bold px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 ml-auto">+500</button>
                         </div>
                     </div>
 
-                    <!-- Distance & Duration -->
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label for="distance" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Distance</label>
                             <div class="relative">
                                 <input type="number" id="distance" step="0.1" value="4.0" inputmode="decimal"
-                                    class="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-900 text-lg font-bold rounded-2xl border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 px-4 py-3 outline-none transition-all">
-                                <span id="distUnitLabel" class="absolute right-3.5 top-3.5 text-xs font-bold text-slate-400 pointer-events-none">KM</span>
+                                    class="w-full bg-slate-50 text-slate-900 text-lg font-bold rounded-2xl border border-slate-200 focus:border-emerald-500 px-4 py-3 outline-none">
+                                <span id="distUnitLabel" class="absolute right-3.5 top-3.5 text-xs font-bold text-slate-400">KM</span>
                             </div>
                         </div>
-
                         <div>
                             <label for="duration" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Duration</label>
                             <div class="relative">
                                 <input type="number" id="duration" value="45" inputmode="numeric"
-                                    class="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-slate-900 text-lg font-bold rounded-2xl border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 px-4 py-3 outline-none transition-all">
-                                <span class="absolute right-3.5 top-3.5 text-xs font-bold text-slate-400 pointer-events-none">MIN</span>
+                                    class="w-full bg-slate-50 text-slate-900 text-lg font-bold rounded-2xl border border-slate-200 focus:border-emerald-500 px-4 py-3 outline-none">
+                                <span class="absolute right-3.5 top-3.5 text-xs font-bold text-slate-400">MIN</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Quick Duration Chips -->
                     <div class="flex gap-2 items-center">
                         <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Quick:</span>
-                        <button type="button" onclick="setDuration(20)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">20m</button>
-                        <button type="button" onclick="setDuration(30)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">30m</button>
-                        <button type="button" onclick="setDuration(45)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">45m</button>
-                        <button type="button" onclick="setDuration(60)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">60m</button>
+                        <button type="button" onclick="setDuration(20)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600">20m</button>
+                        <button type="button" onclick="setDuration(30)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600">30m</button>
+                        <button type="button" onclick="setDuration(45)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600">45m</button>
+                        <button type="button" onclick="setDuration(60)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600">60m</button>
                     </div>
 
-                    <!-- Incline & Slope Grade Selector -->
                     <div class="pt-1">
                         <div class="flex justify-between items-center mb-1.5">
                             <label class="text-xs font-bold uppercase tracking-wider text-slate-500">Incline / Slope</label>
                             <span id="inclineLabel" class="text-xs font-bold text-emerald-600">Flat (0%)</span>
                         </div>
                         <div class="grid grid-cols-4 gap-2 bg-slate-100 p-1 rounded-2xl">
-                            <button type="button" onclick="setIncline(0)" id="incBtn0" class="py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-xs">0% Flat</button>
-                            <button type="button" onclick="setIncline(3)" id="incBtn3" class="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800">3% Mild</button>
-                            <button type="button" onclick="setIncline(6)" id="incBtn6" class="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800">6% Hill</button>
-                            <button type="button" onclick="setIncline(10)" id="incBtn10" class="py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800">10% Steep</button>
+                            <button type="button" onclick="setIncline(0)" id="incBtn0" class="py-2 text-xs font-bold rounded-xl bg-white text-slate-900 shadow-xs">0% Flat</button>
+                            <button type="button" onclick="setIncline(3)" id="incBtn3" class="py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-800">3% Mild</button>
+                            <button type="button" onclick="setIncline(6)" id="incBtn6" class="py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-800">6% Hill</button>
+                            <button type="button" onclick="setIncline(10)" id="incBtn10" class="py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-800">10% Steep</button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- RIGHT COLUMN: Output Analytics, Food Equivalent & Projections -->
+            <!-- RIGHT: Primary Outputs -->
             <section class="lg:col-span-6 space-y-6">
-                
-                <!-- HERO CALORIE OUTPUT -->
                 <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm shadow-slate-200/40 relative overflow-hidden">
                     <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                         <span id="pacePill" class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">
@@ -156,7 +138,6 @@
                         <div class="text-[11px] font-semibold text-slate-400">Baseline: <span id="displayWeight" class="text-slate-700 font-bold">71 kg</span></div>
                     </div>
 
-                    <!-- HERO: Net Active Calories -->
                     <div class="mt-5 flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
                         <div>
                             <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 block mb-1">
@@ -166,20 +147,15 @@
                                 <span class="text-6xl font-black text-slate-900 tracking-tight transition-all" id="resNetCalories">160</span>
                                 <span class="text-xl font-bold text-emerald-600">kcal</span>
                             </div>
-                            <p class="text-xs text-slate-400 mt-1">Deficit to count toward daily nutrition</p>
+                            <p class="text-xs text-slate-400 mt-1">Calorie deficit toward food intake</p>
                         </div>
-
-                        <!-- Subdued Gross Burn Pill -->
                         <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 sm:text-right">
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Total Gross Burn</span>
-                            <div class="text-lg font-bold text-slate-700">
-                                <span id="resGrossCalories">213</span> <span class="text-xs font-medium text-slate-400">kcal</span>
-                            </div>
+                            <div class="text-lg font-bold text-slate-700"><span id="resGrossCalories">213</span> <span class="text-xs text-slate-400 font-medium">kcal</span></div>
                             <span class="text-[10px] text-slate-400 block mt-0.5">Incl. <span id="resRestingCalories">53</span> kcal resting</span>
                         </div>
                     </div>
 
-                    <!-- Effort Zone Gauge -->
                     <div class="mt-5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
                         <div class="flex justify-between items-center mb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                             <span>Effort Zone</span>
@@ -192,7 +168,6 @@
                         </div>
                     </div>
 
-                    <!-- Metrics Grid -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-5 pt-4 border-t border-slate-100 text-center">
                         <div class="bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
                             <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Pace</span>
@@ -213,93 +188,43 @@
                     </div>
                 </div>
 
-                <!-- 1. FOOD EQUIVALENT BURN CARD -->
-                <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-xs space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Energy Deficit Equivalent</span>
-                        <span class="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Real Food Match</span>
-                    </div>
-
-                    <div class="flex items-center gap-3.5 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                        <div id="foodHeroIcon" class="w-12 h-12 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center text-2xl shadow-xs">
-                            🍪
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-xs text-slate-400 font-semibold">Burns off the equivalent of:</p>
-                            <p id="foodHeroTitle" class="text-sm font-black text-slate-900">1.0 Chocolate Chip Cookie</p>
-                            <p id="foodSubMatches" class="text-[11px] text-slate-500 mt-0.5">or 1.1 🥤 cans of soda · 1.5 🍌 bananas</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. WEEKLY DEFICIT & CUMULATIVE FAT LOSS PROJECTION -->
-                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <!-- Navigation Shortcuts to Other Modules -->
+                <div class="grid grid-cols-2 gap-3">
+                    <a href="food.html" class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition-all group">
                         <div>
-                            <h3 class="text-sm font-bold text-slate-900">Projected Fat Loss Over Time</h3>
-                            <p class="text-xs text-slate-400">Consistent deficit without compensatory eating</p>
+                            <span class="text-xs font-bold text-slate-900 block group-hover:text-emerald-600 transition-colors">🍔 Food Rewards</span>
+                            <span class="text-[11px] text-slate-400">Allocate this burn &rarr;</span>
                         </div>
-                        
-                        <!-- Frequency Selector -->
-                        <div class="flex gap-1 bg-slate-100 p-0.5 rounded-xl text-xs font-semibold">
-                            <button type="button" onclick="setFrequency(3)" id="freqBtn3" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900">3x/wk</button>
-                            <button type="button" onclick="setFrequency(4)" id="freqBtn4" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900">4x/wk</button>
-                            <button type="button" onclick="setFrequency(5)" id="freqBtn5" class="px-2 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold">5x/wk</button>
-                            <button type="button" onclick="setFrequency(7)" id="freqBtn7" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900">Daily</button>
+                        <span class="text-lg">🍱</span>
+                    </a>
+                    <a href="projections.html" class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:border-emerald-300 transition-all group">
+                        <div>
+                            <span class="text-xs font-bold text-slate-900 block group-hover:text-emerald-600 transition-colors">📈 Projections</span>
+                            <span class="text-[11px] text-slate-400">Calculate fat loss &rarr;</span>
                         </div>
-                    </div>
-
-                    <!-- Projection Tiles -->
-                    <div class="grid grid-cols-3 gap-2.5 text-center">
-                        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Weekly Deficit</span>
-                            <div class="text-lg font-black text-emerald-600"><span id="projWeeklyCal">800</span> <span class="text-xs font-semibold">kcal</span></div>
-                            <span class="text-[10px] text-slate-400 block mt-0.5">burned per week</span>
-                        </div>
-                        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Monthly Loss</span>
-                            <div class="text-lg font-black text-slate-900" id="projMonthlyFat">0.45 kg</div>
-                            <span class="text-[10px] text-slate-400 block mt-0.5">pure body fat</span>
-                        </div>
-                        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Annual Impact</span>
-                            <div class="text-lg font-black text-slate-900" id="projAnnualFat">5.4 kg</div>
-                            <span class="text-[10px] text-slate-400 block mt-0.5">sustainable loss</span>
-                        </div>
-                    </div>
+                        <span class="text-lg">⚖️</span>
+                    </a>
                 </div>
-
             </section>
         </div>
     </main>
 
     <script>
-        // ==========================================
-        // 1. STATE & UNIT INITIALIZATION
-        // ==========================================
-        let currentUnit = localStorage.getItem('walkcal_unit') || 'metric'; // 'metric' or 'imperial'
+        let currentUnit = localStorage.getItem('walkcal_unit') || 'metric';
         let currentWeightKg = parseFloat(localStorage.getItem('user_weight_kg')) || 71;
         let currentInclinePct = 0;
-        let routineFrequency = 5; // sessions per week
 
-        // ==========================================
-        // 2. UNIT SWITCHER LOGIC
-        // ==========================================
         function setUnit(unit) {
             if (currentUnit === unit) return;
             const distInput = document.getElementById('distance');
-            let currentDist = parseFloat(distInput.value) || 0;
-
+            let dist = parseFloat(distInput.value) || 0;
             if (unit === 'imperial') {
-                // Switching from Metric -> Imperial
                 currentUnit = 'imperial';
-                distInput.value = (currentDist * 0.621371).toFixed(1);
+                distInput.value = (dist * 0.621371).toFixed(1);
             } else {
-                // Switching from Imperial -> Metric
                 currentUnit = 'metric';
-                distInput.value = (currentDist / 0.621371).toFixed(1);
+                distInput.value = (dist / 0.621371).toFixed(1);
             }
-
             localStorage.setItem('walkcal_unit', currentUnit);
             updateUnitUI();
             liveCompute();
@@ -307,69 +232,37 @@
 
         function updateUnitUI() {
             const isMetric = currentUnit === 'metric';
-            const metricBtn = document.getElementById('unitMetricBtn');
-            const imperialBtn = document.getElementById('unitImperialBtn');
-            const weightInput = document.getElementById('userWeightInput');
-
-            if (isMetric) {
-                metricBtn.className = "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold transition-all";
-                imperialBtn.className = "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 font-semibold transition-all";
-                document.getElementById('weightUnitLabel').textContent = 'kg';
-                document.getElementById('distUnitLabel').textContent = 'KM';
-                document.getElementById('paceUnitLabel').textContent = '/km';
-                document.getElementById('speedUnitLabel').textContent = 'km/h';
-                weightInput.value = Math.round(currentWeightKg * 10) / 10;
-                document.getElementById('displayWeight').textContent = `${weightInput.value} kg`;
-            } else {
-                imperialBtn.className = "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold transition-all";
-                metricBtn.className = "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 font-semibold transition-all";
-                document.getElementById('weightUnitLabel').textContent = 'lbs';
-                document.getElementById('distUnitLabel').textContent = 'MI';
-                document.getElementById('paceUnitLabel').textContent = '/mi';
-                document.getElementById('speedUnitLabel').textContent = 'mph';
-                const lbsVal = Math.round(currentWeightKg * 2.20462);
-                weightInput.value = lbsVal;
-                document.getElementById('displayWeight').textContent = `${lbsVal} lbs`;
-            }
+            document.getElementById('unitMetricBtn').className = isMetric ? "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold" : "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900";
+            document.getElementById('unitImperialBtn').className = !isMetric ? "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold" : "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900";
+            document.getElementById('weightUnitLabel').textContent = isMetric ? 'kg' : 'lbs';
+            document.getElementById('distUnitLabel').textContent = isMetric ? 'KM' : 'MI';
+            document.getElementById('paceUnitLabel').textContent = isMetric ? '/km' : '/mi';
+            document.getElementById('speedUnitLabel').textContent = isMetric ? 'km/h' : 'mph';
+            const wVal = isMetric ? Math.round(currentWeightKg * 10)/10 : Math.round(currentWeightKg * 2.20462);
+            document.getElementById('userWeightInput').value = wVal;
+            document.getElementById('displayWeight').textContent = `${wVal} ${isMetric ? 'kg' : 'lbs'}`;
         }
 
         function onWeightChanged(val) {
             const num = parseFloat(val) || 0;
-            if (currentUnit === 'metric') {
-                currentWeightKg = num;
-                document.getElementById('displayWeight').textContent = `${num} kg`;
-            } else {
-                currentWeightKg = num / 2.20462;
-                document.getElementById('displayWeight').textContent = `${num} lbs`;
-            }
+            currentWeightKg = currentUnit === 'metric' ? num : num / 2.20462;
             localStorage.setItem('user_weight_kg', currentWeightKg);
+            document.getElementById('displayWeight').textContent = `${num} ${currentUnit === 'metric' ? 'kg' : 'lbs'}`;
             liveCompute();
         }
 
-        // ==========================================
-        // 3. INCLINE & ACCURATE ACSM MET FORMULA
-        // ==========================================
         function setIncline(pct) {
             currentInclinePct = pct;
             [0, 3, 6, 10].forEach(p => {
-                const btn = document.getElementById(`incBtn${p}`);
-                if (p === pct) {
-                    btn.className = "py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-900 shadow-xs";
-                } else {
-                    btn.className = "py-2 text-xs font-bold rounded-xl transition-all text-slate-500 hover:text-slate-800";
-                }
+                document.getElementById(`incBtn${p}`).className = p === pct ? "py-2 text-xs font-bold rounded-xl bg-white text-slate-900 shadow-xs" : "py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-800";
             });
-
-            const labels = { 0: 'Flat (0%)', 3: 'Mild (+3%)', 6: 'Hill (+6%)', 10: 'Steep (+10%)' };
-            document.getElementById('inclineLabel').textContent = labels[pct];
+            document.getElementById('inclineLabel').textContent = { 0: 'Flat (0%)', 3: 'Mild (+3%)', 6: 'Hill (+6%)', 10: 'Steep (+10%)' }[pct];
             liveCompute();
         }
 
         function calculateMET(speedKmh, inclinePct) {
             if (speedKmh <= 0) return 1.0;
             const mph = speedKmh * 0.621371;
-
-            // Compendium baseline for flat ground (3.3 mph = 4.0 MET)
             let baseMet = 2.0;
             if (mph < 2.0) baseMet = 2.0;
             else if (mph < 2.5) baseMet = 2.8 + (mph - 2.0) * ((3.0 - 2.8) / 0.5);
@@ -379,32 +272,19 @@
             else if (mph < 4.5) baseMet = 5.0 + (mph - 4.0) * ((7.0 - 5.0) / 0.5);
             else baseMet = 7.0 + (mph - 4.5) * 1.5;
 
-            // ACSM Incline demand
             const speedMPerMin = (speedKmh * 1000) / 60;
             const gradeFraction = inclinePct / 100;
-            const inclineMetDelta = (1.8 * speedMPerMin * gradeFraction) / 3.5;
-
-            return baseMet + inclineMetDelta;
+            return baseMet + (1.8 * speedMPerMin * gradeFraction) / 3.5;
         }
 
-        // ==========================================
-        // 4. REAL-TIME COMPUTATION ENGINE
-        // ==========================================
         function liveCompute() {
-            const stepsInput = document.getElementById('steps');
-            const distInput = document.getElementById('distance');
-            const durInput = document.getElementById('duration');
-
-            let steps = parseInt(stepsInput.value) || 0;
-            let enteredDistance = parseFloat(distInput.value) || 0;
-            let durationMin = parseInt(durInput.value) || 0;
-
-            if (durationMin <= 0 || (steps <= 0 && enteredDistance <= 0)) return;
+            let steps = parseInt(document.getElementById('steps').value) || 0;
+            let enteredDist = parseFloat(document.getElementById('distance').value) || 0;
+            let durationMin = parseInt(document.getElementById('duration').value) || 0;
+            if (durationMin <= 0) return;
 
             const durationHours = durationMin / 60;
-            
-            // Standardize distance to KM internally for caloric precision
-            const distanceKm = currentUnit === 'metric' ? enteredDistance : enteredDistance * 1.60934;
+            const distanceKm = currentUnit === 'metric' ? enteredDist : enteredDist * 1.60934;
             const speedKmh = distanceKm / durationHours;
             const met = calculateMET(speedKmh, currentInclinePct);
 
@@ -412,21 +292,18 @@
             const netCalories = Math.round((met - 1) * currentWeightKg * durationHours);
             const restingCalories = Math.max(0, grossCalories - netCalories);
 
-            // Display Speed & Pace according to current unit
-            let displaySpeed = 0;
-            let paceStr = '--:--';
+            // Sync globally to localStorage for other pages
+            localStorage.setItem('walkcal_net_cal', netCalories);
+            localStorage.setItem('walkcal_dist_km', distanceKm);
+            localStorage.setItem('walkcal_dur_min', durationMin);
 
-            if (enteredDistance > 0) {
-                displaySpeed = enteredDistance / durationHours;
-                const paceMinPerUnit = durationMin / enteredDistance;
-                const paceMinutes = Math.floor(paceMinPerUnit);
-                const paceSeconds = Math.round((paceMinPerUnit - paceMinutes) * 60);
-                paceStr = `${paceMinutes}:${paceSeconds.toString().padStart(2, '0')}`;
-            }
+            const displaySpeed = enteredDist / durationHours;
+            const paceMinPerUnit = durationMin / enteredDist;
+            const paceMinutes = Math.floor(paceMinPerUnit);
+            const paceSeconds = Math.round((paceMinPerUnit - paceMinutes) * 60);
+            const paceStr = enteredDist > 0 ? `${paceMinutes}:${paceSeconds.toString().padStart(2, '0')}` : '--:--';
+            const cadence = Math.round(steps / durationMin);
 
-            const cadence = durationMin > 0 ? Math.round(steps / durationMin) : 0;
-
-            // Update DOM
             document.getElementById('resNetCalories').textContent = isNaN(netCalories) ? 0 : netCalories;
             document.getElementById('resGrossCalories').textContent = isNaN(grossCalories) ? 0 : grossCalories;
             document.getElementById('resRestingCalories').textContent = isNaN(restingCalories) ? 0 : restingCalories;
@@ -435,144 +312,37 @@
             document.getElementById('resCadence').textContent = cadence || 0;
             document.getElementById('resMet').textContent = `${met.toFixed(1)} MET`;
 
-            // Effort Zone Feedback
             const paceBadge = document.getElementById('pacePill');
             const zoneDesc = document.getElementById('zoneDescription');
-            const b1 = document.getElementById('barZ1');
-            const b2 = document.getElementById('barZ2');
-            const b3 = document.getElementById('barZ3');
+            const b1 = document.getElementById('barZ1'), b2 = document.getElementById('barZ2'), b3 = document.getElementById('barZ3');
 
             if (met < 3.3) {
                 paceBadge.textContent = "Zone 1 (Recovery)";
-                paceBadge.className = "text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-100";
+                paceBadge.className = "text-xs font-bold uppercase px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-100";
                 zoneDesc.textContent = "Easy Pace · Active Recovery";
-                b1.className = "h-full bg-blue-500 transition-all";
-                b2.className = "h-full bg-slate-200 transition-all";
-                b3.className = "h-full bg-slate-200 transition-all";
+                b1.className = "h-full bg-blue-500 transition-all"; b2.className = "h-full bg-slate-200 transition-all"; b3.className = "h-full bg-slate-200 transition-all";
             } else if (met <= 5.8) {
                 paceBadge.textContent = "Zone 2 (Fat Burn)";
-                paceBadge.className = "text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100";
+                paceBadge.className = "text-xs font-bold uppercase px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100";
                 zoneDesc.textContent = "Optimal Fat-Oxidation Sweet Spot";
-                b1.className = "h-full bg-blue-300 transition-all";
-                b2.className = "h-full bg-emerald-500 transition-all";
-                b3.className = "h-full bg-slate-200 transition-all";
+                b1.className = "h-full bg-blue-300 transition-all"; b2.className = "h-full bg-emerald-500 transition-all"; b3.className = "h-full bg-slate-200 transition-all";
             } else {
                 paceBadge.textContent = "Zone 3 (Power / Hill)";
-                paceBadge.className = "text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-100";
+                paceBadge.className = "text-xs font-bold uppercase px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-100";
                 zoneDesc.textContent = "Vigorous Aerobic Conditioning";
-                b1.className = "h-full bg-blue-300 transition-all";
-                b2.className = "h-full bg-emerald-300 transition-all";
-                b3.className = "h-full bg-amber-500 transition-all";
-            }
-
-            // Update Features 1 & 3
-            updateFoodEquivalent(netCalories);
-            updateProjections(netCalories);
-        }
-
-        // ==========================================
-        // 5. FOOD EQUIVALENT BURN ENGINE
-        // ==========================================
-        const FOOD_BENCHMARKS = [
-            { name: 'Chocolate Chip Cookie', icon: '🍪', cal: 160 },
-            { name: 'Can of Cola', icon: '🥤', cal: 140 },
-            { name: 'Medium Banana', icon: '🍌', cal: 105 },
-            { name: 'Slice of Cheese Pizza', icon: '🍕', cal: 285 },
-            { name: 'Glazed Donut', icon: '🍩', cal: 260 },
-            { name: 'Glass of Wine', icon: '🍷', cal: 125 },
-            { name: 'Handful of Roasted Almonds (30g)', icon: '🥜', cal: 170 },
-            { name: 'Avocado', icon: '🥑', cal: 240 }
-        ];
-
-        function updateFoodEquivalent(netCal) {
-            if (netCal <= 0) {
-                document.getElementById('foodHeroTitle').textContent = 'Walk to calculate food burn';
-                document.getElementById('foodHeroIcon').textContent = '🥗';
-                document.getElementById('foodSubMatches').textContent = '--';
-                return;
-            }
-
-            // Select closest primary single item
-            let closestItem = FOOD_BENCHMARKS[0];
-            let minDiff = Math.abs(netCal - closestItem.cal);
-
-            FOOD_BENCHMARKS.forEach(item => {
-                const diff = Math.abs(netCal - item.cal);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    closestItem = item;
-                }
-            });
-
-            const multiple = (netCal / closestItem.cal).toFixed(1);
-            document.getElementById('foodHeroIcon').textContent = closestItem.icon;
-            document.getElementById('foodHeroTitle').textContent = `${multiple} × ${closestItem.name} (${Math.round(netCal)} kcal)`;
-
-            // Sub-comparisons
-            const sodaCount = (netCal / 140).toFixed(1);
-            const bananaCount = (netCal / 105).toFixed(1);
-            const wineCount = (netCal / 125).toFixed(1);
-
-            document.getElementById('foodSubMatches').textContent = 
-                `or ${sodaCount} 🥤 cans of soda · ${bananaCount} 🍌 bananas · ${wineCount} 🍷 glasses of wine`;
-        }
-
-        // ==========================================
-        // 6. FAT LOSS & DEFICIT PROJECTION ENGINE
-        // ==========================================
-        function setFrequency(freq) {
-            routineFrequency = freq;
-            [3, 4, 5, 7].forEach(f => {
-                const btn = document.getElementById(`freqBtn${f}`);
-                if (f === freq) {
-                    btn.className = "px-2 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold";
-                } else {
-                    btn.className = "px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900";
-                }
-            });
-            liveCompute();
-        }
-
-        function updateProjections(netCalPerWalk) {
-            const weeklyDeficit = netCalPerWalk * routineFrequency;
-            const monthlyDeficit = weeklyDeficit * (52 / 12);
-            const annualDeficit = weeklyDeficit * 52;
-
-            document.getElementById('projWeeklyCal').textContent = Math.round(weeklyDeficit).toLocaleString();
-
-            if (currentUnit === 'metric') {
-                // 1 kg of body fat ≈ 7,700 kcal
-                const monthlyKg = (monthlyDeficit / 7700).toFixed(2);
-                const annualKg = (annualDeficit / 7700).toFixed(1);
-                document.getElementById('projMonthlyFat').textContent = `${monthlyKg} kg`;
-                document.getElementById('projAnnualFat').textContent = `${annualKg} kg`;
-            } else {
-                // 1 lb of body fat ≈ 3,500 kcal
-                const monthlyLbs = (monthlyDeficit / 3500).toFixed(2);
-                const annualLbs = (annualDeficit / 3500).toFixed(1);
-                document.getElementById('projMonthlyFat').textContent = `${monthlyLbs} lbs`;
-                document.getElementById('projAnnualFat').textContent = `${annualLbs} lbs`;
+                b1.className = "h-full bg-blue-300 transition-all"; b2.className = "h-full bg-emerald-300 transition-all"; b3.className = "h-full bg-amber-500 transition-all";
             }
         }
 
-        // ==========================================
-        // 7. INPUT LISTENERS & AUTO-SYNC
-        // ==========================================
         document.getElementById('steps').addEventListener('input', (e) => {
             const steps = parseInt(e.target.value) || 0;
-            if (steps > 0) {
-                const dist = currentUnit === 'metric' ? (steps * 0.00067) : (steps * 0.0004163);
-                document.getElementById('distance').value = dist.toFixed(1);
-            }
+            if (steps > 0) document.getElementById('distance').value = (currentUnit === 'metric' ? steps * 0.00067 : steps * 0.0004163).toFixed(1);
             liveCompute();
         });
 
         document.getElementById('distance').addEventListener('input', (e) => {
             const dist = parseFloat(e.target.value) || 0;
-            if (dist > 0) {
-                const st = currentUnit === 'metric' ? Math.round(dist / 0.00067) : Math.round(dist / 0.0004163);
-                document.getElementById('steps').value = st;
-            }
+            if (dist > 0) document.getElementById('steps').value = Math.round(dist / (currentUnit === 'metric' ? 0.00067 : 0.0004163));
             liveCompute();
         });
 
@@ -580,26 +350,13 @@
 
         function setSteps(num) {
             document.getElementById('steps').value = num;
-            const dist = currentUnit === 'metric' ? (num * 0.00067) : (num * 0.0004163);
-            document.getElementById('distance').value = dist.toFixed(1);
+            document.getElementById('distance').value = (currentUnit === 'metric' ? num * 0.00067 : num * 0.0004163).toFixed(1);
             liveCompute();
         }
+        function addSteps(delta) { setSteps((parseInt(document.getElementById('steps').value) || 0) + delta); }
+        function setDuration(min) { document.getElementById('duration').value = min; liveCompute(); }
 
-        function addSteps(delta) {
-            const curr = parseInt(document.getElementById('steps').value) || 0;
-            setSteps(curr + delta);
-        }
-
-        function setDuration(min) {
-            document.getElementById('duration').value = min;
-            liveCompute();
-        }
-
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', () => {
-            updateUnitUI();
-            liveCompute();
-        });
+        document.addEventListener('DOMContentLoaded', () => { updateUnitUI(); liveCompute(); });
     </script>
 </body>
 </html>
