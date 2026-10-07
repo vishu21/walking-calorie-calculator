@@ -290,11 +290,11 @@
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="text-base font-bold text-slate-900">Walk History</h3>
                         <!-- Filter Tabs -->
-                        <div class="flex gap-1 bg-slate-100 p-0.5 rounded-xl text-xs font-semibold text-slate-500">
-                            <button type="button" onclick="setHistoryFilter('all')" id="filterBtnAll" class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs">All</button>
-                            <button type="button" onclick="setHistoryFilter('Wife')" id="filterBtnWife" class="px-2.5 py-1 rounded-lg hover:text-slate-900">👩 Wife</button>
-                            <button type="button" onclick="setHistoryFilter('Me')" id="filterBtnMe" class="px-2.5 py-1 rounded-lg hover:text-slate-900">👨 Me</button>
-                        </div>
+<div class="flex gap-1 bg-slate-100 p-0.5 rounded-xl text-xs font-semibold">
+    <button type="button" onclick="setHistoryFilter('all')" id="filterBtnAll" class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-sm transition-all">All</button>
+    <button type="button" onclick="setHistoryFilter('wife')" id="filterBtnWife" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition-all">👩 Wife</button>
+    <button type="button" onclick="setHistoryFilter('me')" id="filterBtnMe" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition-all">👨 Me</button>
+</div>
                     </div>
 
                     <div id="historyContainer" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
@@ -631,17 +631,73 @@ function calculateMET(speedKmh, inclinePct) {
         }
 
         function setHistoryFilter(filter) {
-            activeHistoryFilter = filter;
-            ['all', 'Wife', 'Me'].forEach(f => {
-                const btn = document.getElementById(`filterBtn${f}`);
-                if (f === filter) {
-                    btn.className = "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs";
-                } else {
-                    btn.className = "px-2.5 py-1 rounded-lg hover:text-slate-900";
-                }
-            });
-            renderFilteredHistory();
+    activeHistoryFilter = filter.toLowerCase();
+
+    const tabs = [
+        { key: 'all', id: 'filterBtnAll' },
+        { key: 'wife', id: 'filterBtnWife' },
+        { key: 'me', id: 'filterBtnMe' }
+    ];
+
+    tabs.forEach(({ key, id }) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+
+        if (key === activeHistoryFilter) {
+            btn.className = "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-sm font-bold transition-all";
+        } else {
+            btn.className = "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900 font-semibold transition-all";
         }
+    });
+
+    renderFilteredHistory();
+}
+
+function renderFilteredHistory() {
+    const container = document.getElementById('historyContainer');
+    if (!container) return;
+
+    // Case-insensitive filtering so both 'Wife' and 'wife' match
+    const walks = activeHistoryFilter === 'all'
+        ? allWalks
+        : allWalks.filter(w => (w.profile_name || '').toLowerCase() === activeHistoryFilter);
+
+    if (!walks || walks.length === 0) {
+        container.innerHTML = `<div class="py-6 text-center text-slate-400 text-sm">No walk sessions found.</div>`;
+        return;
+    }
+
+    container.innerHTML = walks.map((w, idx) => {
+        const dateObj = new Date(w.created_at);
+        const timeStr = dateObj.toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        const isWife = (w.profile_name || '').toLowerCase() === 'wife';
+        const avatar = isWife ? '👩' : '👨';
+
+        return `
+            <div class="group flex items-center justify-between p-3.5 bg-slate-50/70 hover:bg-slate-100/90 rounded-2xl border border-slate-100 transition-all">
+                <div class="flex items-center gap-3">
+                    <span class="text-xl">${avatar}</span>
+                    <div>
+                        <p class="text-sm font-bold text-slate-800">${w.distance_km} km <span class="font-normal text-xs text-slate-400">in ${w.duration_min}m</span></p>
+                        <p class="text-[11px] text-slate-400">${w.profile_name} · ${timeStr} · ${Number(w.steps).toLocaleString()} steps · ${w.pace}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <span class="text-sm font-black text-emerald-600">+${Math.round(w.net_calories)}</span>
+                        <span class="text-[10px] font-bold text-slate-400 block uppercase">Net Active</span>
+                    </div>
+                    <button onclick="deleteWalk('${w.id || ''}', ${idx})" title="Delete entry"
+                        class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-500 transition-all p-1 text-lg font-bold">
+                        &times;
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
         async function deleteWalk(id, index) {
             if (!confirm("Delete this logged walk?")) return;
@@ -655,48 +711,6 @@ function calculateMET(speedKmh, inclinePct) {
             localStorage.setItem('household_walk_history', JSON.stringify(localWalks));
 
             fetchWalks();
-        }
-
-        function renderFilteredHistory() {
-            const container = document.getElementById('historyContainer');
-            const walks = activeHistoryFilter === 'all' 
-                ? allWalks 
-                : allWalks.filter(w => w.profile_name === activeHistoryFilter);
-
-            if (!walks || walks.length === 0) {
-                container.innerHTML = `<div class="py-6 text-center text-slate-400 text-sm">No walk sessions found.</div>`;
-                return;
-            }
-
-            container.innerHTML = walks.map((w, idx) => {
-                const dateObj = new Date(w.created_at);
-                const timeStr = dateObj.toLocaleDateString(undefined, {
-                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-                });
-                const avatar = w.profile_name === 'Wife' ? '👩' : '👨';
-
-                return `
-                    <div class="group flex items-center justify-between p-3.5 bg-slate-50/70 hover:bg-slate-100/90 rounded-2xl border border-slate-100 transition-all">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xl">${avatar}</span>
-                            <div>
-                                <p class="text-sm font-bold text-slate-800">${w.distance_km} km <span class="font-normal text-xs text-slate-400">in ${w.duration_min}m</span></p>
-                                <p class="text-[11px] text-slate-400">${w.profile_name} · ${timeStr} · ${Number(w.steps).toLocaleString()} steps · ${w.pace}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="text-right">
-                                <span class="text-sm font-black text-emerald-600">+${Math.round(w.net_calories)}</span>
-                                <span class="text-[10px] font-bold text-slate-400 block uppercase">Net Active</span>
-                            </div>
-                            <button onclick="deleteWalk('${w.id || ''}', ${idx})" title="Delete entry"
-                                class="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-500 transition-all p-1">
-                                &times;
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
         }
 
         // Initialize on load
