@@ -2,29 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WalkCal — Projections</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); 
+            -webkit-tap-highlight-color: transparent;
+        }
     </style>
 </head>
-<body class="min-h-screen text-slate-800 antialiased selection:bg-emerald-500 selection:text-white pb-16">
+<body class="min-h-screen text-slate-800 antialiased selection:bg-emerald-500 selection:text-white pb-10">
 
-    <!-- Shared Navigation Bar -->
-    <header class="w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-40">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-6">
-                <a href="index.html" class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 font-black">
+    <!-- Mobile-First Navigation Bar -->
+    <header class="w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 sm:gap-6">
+                <a href="index.html" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 font-black text-sm">
                         W
                     </div>
-                    <span class="text-lg font-black tracking-tight text-slate-900">Walk<span class="text-emerald-600">Cal</span></span>
+                    <span class="text-base sm:text-lg font-black tracking-tight text-slate-900">Walk<span class="text-emerald-600">Cal</span></span>
                 </a>
 
+                <!-- Desktop Navigation Tabs -->
                 <nav class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-bold">
                     <a href="index.html" class="px-3 py-1.5 rounded-xl text-slate-500 hover:text-slate-900 transition-colors">🚶 Calculator</a>
                     <a href="food.html" class="px-3 py-1.5 rounded-xl text-slate-500 hover:text-slate-900 transition-colors">🍔 Food Rewards</a>
@@ -32,125 +37,156 @@
                 </nav>
             </div>
 
-            <div class="flex items-center gap-2 text-xs font-bold bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+            <!-- Header Quick Badge -->
+            <div class="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-xl border border-slate-200 text-xs font-bold">
                 <span class="text-slate-400">Walk Deficit:</span>
-                <span id="headerBurnPool" class="text-emerald-700 font-black text-sm">160</span>
-                <span class="text-slate-400 font-normal">kcal</span>
+                <span id="headerBurnPool" class="text-emerald-700 font-black">160</span>
+                <span class="text-slate-400 font-semibold text-[11px]">kcal</span>
             </div>
         </div>
 
-        <div class="md:hidden flex border-t border-slate-100 px-4 py-2 bg-slate-50 justify-around text-xs font-bold">
+        <!-- Mobile Navigation Row -->
+        <div class="md:hidden flex border-t border-slate-100 px-3 py-1.5 bg-slate-50 justify-around text-xs font-bold">
             <a href="index.html" class="text-slate-500">🚶 Calculator</a>
             <a href="food.html" class="text-slate-500">🍔 Food Rewards</a>
             <a href="projections.html" class="text-emerald-600">📈 Projections</a>
         </div>
     </header>
 
-    <!-- Projections Workspace -->
-    <main class="max-w-3xl mx-auto px-4 sm:px-6 pt-8 space-y-6">
+    <!-- Main Workspace -->
+    <main class="max-w-xl mx-auto px-3.5 sm:px-6 pt-3.5 sm:pt-6 space-y-3.5">
 
-        <!-- Top Walk Summary Card -->
-        <section class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Session Baseline</span>
-                <div class="flex items-baseline gap-2">
-                    <span id="sessionKcalLabel" class="text-3xl font-black text-slate-900">160</span>
-                    <span class="text-emerald-600 font-bold text-sm">net active kcal per walk</span>
+        <!-- Compact Walk Deficit Header Strip -->
+        <section class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-black">
+                    ⚖️
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block leading-none mb-0.5">Session Baseline</span>
+                    <p class="text-sm sm:text-base font-extrabold text-slate-900">
+                        <span id="bannerKcal">160</span> <span class="text-xs font-bold text-emerald-600">net kcal per walk</span>
+                    </p>
                 </div>
             </div>
-            <a href="index.html" class="inline-flex items-center gap-1.5 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl transition-colors">
-                <span>Change Pace / Distance</span>
-                <span>&rarr;</span>
+            <a href="index.html" class="text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-xl transition-colors">
+                Edit Walk ✏️
             </a>
         </section>
 
-        <!-- Cumulative Fat Loss Card -->
-        <section class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-sm shadow-slate-200/40 space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <!-- Compact Projections Card -->
+        <section class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-sm shadow-slate-200/40 space-y-4">
+            
+            <!-- Header & Integrated Routine Frequency Selector -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1">
                 <div>
-                    <h2 class="text-base font-bold text-slate-900">Projected Fat Loss Over Time</h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Calculated using standard metabolic tissue density (7,700 kcal / kg)</p>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900">Projected Fat Loss</h2>
+                    <p class="text-[11px] text-slate-400">Based on 7,700 kcal deficit per 1 kg body fat</p>
                 </div>
 
-                <!-- Frequency Selector -->
-                <div class="flex gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
-                    <button type="button" onclick="setFrequency(3)" id="freqBtn3" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900">3x/wk</button>
-                    <button type="button" onclick="setFrequency(4)" id="freqBtn4" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900">4x/wk</button>
-                    <button type="button" onclick="setFrequency(5)" id="freqBtn5" class="px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold">5x/wk</button>
-                    <button type="button" onclick="setFrequency(7)" id="freqBtn7" class="px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900">Daily</button>
+                <div class="flex gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold self-start sm:self-auto">
+                    <button type="button" onclick="setFrequency(3)" id="freqBtn3" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition-colors">3x/wk</button>
+                    <button type="button" onclick="setFrequency(4)" id="freqBtn4" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition-colors">4x/wk</button>
+                    <button type="button" onclick="setFrequency(5)" id="freqBtn5" class="px-2 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold transition-all">5x/wk</button>
+                    <button type="button" onclick="setFrequency(7)" id="freqBtn7" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition-colors">Daily</button>
                 </div>
             </div>
 
-            <!-- Big Metric Tiles -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-center">
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Weekly Deficit</span>
-                    <div class="text-2xl font-black text-emerald-600"><span id="projWeeklyCal">800</span> <span class="text-xs font-bold">kcal</span></div>
-                    <span class="text-[11px] text-slate-400 block mt-1">burned every week</span>
-                </div>
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Monthly Loss</span>
-                    <div class="text-2xl font-black text-slate-900" id="projMonthlyFat">0.45 kg</div>
-                    <span class="text-[11px] text-slate-400 block mt-1">pure body fat deficit</span>
-                </div>
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Annual Impact</span>
-                    <div class="text-2xl font-black text-slate-900" id="projAnnualFat">5.4 kg</div>
-                    <span class="text-[11px] text-slate-400 block mt-1">sustainable yearly result</span>
-                </div>
-            </div>
-
-            <!-- Detailed Milestones Table -->
-            <div class="space-y-3 pt-3 border-t border-slate-100">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Milestone Timeline</span>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
-                        <span class="font-bold text-slate-700">🗓️ 3 Months (12 wks)</span>
-                        <span class="font-black text-emerald-700" id="m3Val">1.2 kg fat</span>
+            <!-- Dense 3-Tile Deficit Grid -->
+            <div class="grid grid-cols-3 gap-2 sm:gap-2.5 text-center">
+                <div class="bg-slate-50 p-2.5 sm:p-3 rounded-2xl border border-slate-100">
+                    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Weekly</span>
+                    <div class="text-base sm:text-lg font-black text-emerald-600 leading-tight">
+                        <span id="projWeeklyCal">800</span> <span class="text-[10px] font-bold">kcal</span>
                     </div>
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
-                        <span class="font-bold text-slate-700">🗓️ 6 Months (26 wks)</span>
-                        <span class="font-black text-emerald-700" id="m6Val">2.7 kg fat</span>
+                    <span class="text-[9px] text-slate-400 block mt-0.5">weekly deficit</span>
+                </div>
+
+                <div class="bg-slate-50 p-2.5 sm:p-3 rounded-2xl border border-slate-100">
+                    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Monthly</span>
+                    <div class="text-base sm:text-lg font-black text-slate-900 leading-tight" id="projMonthlyFat">
+                        0.45 kg
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-0.5">pure fat loss</span>
+                </div>
+
+                <div class="bg-slate-50 p-2.5 sm:p-3 rounded-2xl border border-slate-100">
+                    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Yearly</span>
+                    <div class="text-base sm:text-lg font-black text-slate-900 leading-tight" id="projAnnualFat">
+                        5.4 kg
+                    </div>
+                    <span class="text-[9px] text-slate-400 block mt-0.5">sustained result</span>
+                </div>
+            </div>
+
+            <!-- Milestone Timeline Roadmap -->
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+                <div class="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <span>Milestone Timeline</span>
+                    <span class="text-[10px] font-normal text-slate-400 normal-case">without compensatory eating</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                        <span class="font-bold text-slate-700 text-[11px]">🗓️ 1 Month</span>
+                        <span class="font-black text-emerald-700 text-xs" id="m1Val">0.4 kg</span>
+                    </div>
+                    <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                        <span class="font-bold text-slate-700 text-[11px]">🗓️ 3 Months</span>
+                        <span class="font-black text-emerald-700 text-xs" id="m3Val">1.3 kg</span>
+                    </div>
+                    <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                        <span class="font-bold text-slate-700 text-[11px]">🗓️ 6 Months</span>
+                        <span class="font-black text-emerald-700 text-xs" id="m6Val">2.7 kg</span>
+                    </div>
+                    <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                        <span class="font-bold text-slate-700 text-[11px]">🗓️ 1 Year</span>
+                        <span class="font-black text-emerald-700 text-xs" id="m12Val">5.4 kg</span>
                     </div>
                 </div>
             </div>
+
         </section>
 
     </main>
 
     <script>
         let activeNetKcal = parseFloat(localStorage.getItem('walkcal_net_cal')) || 160;
-        let currentUnit = localStorage.getItem('walkcal_unit') || 'metric';
         let routineFrequency = 5;
 
         function setFrequency(freq) {
             routineFrequency = freq;
             [3, 4, 5, 7].forEach(f => {
-                document.getElementById(`freqBtn${f}`).className = f === freq ? "px-2.5 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold" : "px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-900";
+                const btn = document.getElementById(`freqBtn${f}`);
+                btn.className = f === freq 
+                    ? "px-2 py-1 rounded-lg bg-white text-slate-900 shadow-xs font-bold transition-all" 
+                    : "px-2 py-1 rounded-lg text-slate-500 hover:text-slate-900 transition-colors";
             });
             renderProjections();
         }
 
         function renderProjections() {
             document.getElementById('headerBurnPool').textContent = Math.round(activeNetKcal);
-            document.getElementById('sessionKcalLabel').textContent = Math.round(activeNetKcal);
+            document.getElementById('bannerKcal').textContent = Math.round(activeNetKcal);
 
             const weeklyDeficit = activeNetKcal * routineFrequency;
             const monthlyDeficit = weeklyDeficit * (52 / 12);
             const annualDeficit = weeklyDeficit * 52;
-            const m3Deficit = weeklyDeficit * 12;
-            const m6Deficit = weeklyDeficit * 26;
+            
+            // Standard body fat tissue density: 7,700 kcal ≈ 1 kg fat
+            const m1Kg = (monthlyDeficit / 7700).toFixed(2);
+            const m3Kg = ((weeklyDeficit * 12) / 7700).toFixed(1);
+            const m6Kg = ((weeklyDeficit * 26) / 7700).toFixed(1);
+            const m12Kg = (annualDeficit / 7700).toFixed(1);
 
             document.getElementById('projWeeklyCal').textContent = Math.round(weeklyDeficit).toLocaleString();
+            document.getElementById('projMonthlyFat').textContent = `${m1Kg} kg`;
+            document.getElementById('projAnnualFat').textContent = `${m12Kg} kg`;
 
-            const isMetric = currentUnit === 'metric';
-            const divisor = isMetric ? 7700 : 3500;
-            const unit = isMetric ? 'kg' : 'lbs';
-
-            document.getElementById('projMonthlyFat').textContent = `${(monthlyDeficit / divisor).toFixed(2)} ${unit}`;
-            document.getElementById('projAnnualFat').textContent = `${(annualDeficit / divisor).toFixed(1)} ${unit}`;
-            document.getElementById('m3Val').textContent = `${(m3Deficit / divisor).toFixed(1)} ${unit} fat`;
-            document.getElementById('m6Val').textContent = `${(m6Deficit / divisor).toFixed(1)} ${unit} fat`;
+            document.getElementById('m1Val').textContent = `${m1Kg} kg fat`;
+            document.getElementById('m3Val').textContent = `${m3Kg} kg fat`;
+            document.getElementById('m6Val').textContent = `${m6Kg} kg fat`;
+            document.getElementById('m12Val').textContent = `${m12Kg} kg fat`;
         }
 
         document.addEventListener('DOMContentLoaded', renderProjections);
